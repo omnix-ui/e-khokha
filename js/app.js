@@ -106,59 +106,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-// --- PRODUCT PAGE INTERACTIVITY (Size & Quantity) --- //
+// --- PRODUCT PAGE LOGIC (Load Data, Size, Qty, Buy Now) --- //
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Sirf tabhi chalega jab hum Product page par honge
-    if (window.location.pathname.includes('product.html')) {
+    
+    // NAYA TARIQA: URL check karne ki jagah page ke andar ka element check karo
+    const isProductPage = document.querySelector('.product-title'); 
+
+    if (isProductPage) { // Agar product title mojood hai, toh ye product page hai
         
-        // 1. SIZE SELECTION LOGIC
+        // 1. DATA LOAD KARNA (Home se jo tap kiya tha)
+        const activeProduct = JSON.parse(localStorage.getItem('eKhokhaActiveProduct'));
+        if (activeProduct) {
+            document.querySelector('.product-title').innerText = activeProduct.name;
+            document.querySelector('.current-price').innerText = '₹' + activeProduct.currentPrice;
+            const originalPriceEl = document.querySelector('.original-price');
+            if (originalPriceEl) {
+                originalPriceEl.innerText = '₹' + activeProduct.originalPrice;
+            }
+        }
+
+        // 2. SIZE SELECTION LOGIC
         const sizeBtns = document.querySelectorAll('.size-list .size-btn:not(.disabled)');
         sizeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Pehle sabhi se 'active' class hatao
                 sizeBtns.forEach(b => b.classList.remove('active'));
-                // Jis button par click kiya hai uspar 'active' lagao
                 btn.classList.add('active');
             });
         });
 
-        // 2. QUANTITY (+ / -) LOGIC
+        // 3. QUANTITY (+ / -) LOGIC
         const qtyMinusBtn = document.querySelector('.qty-controls .qty-btn:first-child');
         const qtyPlusBtn = document.querySelector('.qty-controls .qty-btn:last-child');
         const qtyNumber = document.querySelector('.qty-controls .qty-number');
 
         if (qtyMinusBtn && qtyPlusBtn && qtyNumber) {
-            // Minus Button
             qtyMinusBtn.addEventListener('click', () => {
                 let qty = parseInt(qtyNumber.innerText);
-                if (qty > 1) { // Quantity 1 se kam nahi honi chahiye
-                    qtyNumber.innerText = qty - 1;
-                }
+                if (qty > 1) qtyNumber.innerText = qty - 1;
             });
-            
-            // Plus Button
             qtyPlusBtn.addEventListener('click', () => {
                 let qty = parseInt(qtyNumber.innerText);
-                if (qty < 10) { // Max 10 items limit (optional)
-                    qtyNumber.innerText = qty + 1;
-                }
+                if (qty < 10) qtyNumber.innerText = qty + 1;
             });
         }
-    }
-});
-// --- 3️⃣ BUY NOW (DIRECT CHECKOUT) LOGIC --- //
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Check karo ki hum Product page par hain
-    if (window.location.pathname.includes('product.html')) {
+        // 4. BUY NOW LOGIC
         const buyNowBtn = document.querySelector('.btn-buy-now');
-
         if (buyNowBtn) {
             buyNowBtn.addEventListener('click', (e) => {
-                e.preventDefault(); // Default jump roko
-
-                // Screen se data nikalna
+                e.preventDefault(); 
+                
                 const name = document.querySelector('.product-title').innerText;
                 const priceText = document.querySelector('.current-price').innerText;
                 const price = parseInt(priceText.replace(/[^0-9]/g, ''));
@@ -166,10 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const activeSizeBtn = document.querySelector('.size-list .size-btn.active');
                 const size = activeSizeBtn ? activeSizeBtn.innerText : 'Free Size';
                 
-                const qtyNumber = document.querySelector('.qty-controls .qty-number');
-                const quantity = parseInt(qtyNumber.innerText);
+                const quantity = parseInt(document.querySelector('.qty-controls .qty-number').innerText);
 
-                // Ek item ka object banana
                 const buyNowItem = [{
                     id: "PROD-DIRECT",
                     name: name,
@@ -179,11 +175,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     image: "IMG"
                 }];
 
-                // LocalStorage mein save karna
                 localStorage.setItem('eKhokhaCheckoutData', JSON.stringify(buyNowItem));
                 localStorage.setItem('eKhokhaCheckoutMode', 'buynow');
-
-                // Data save hone ke baad Checkout par bhejna
+                
                 window.location.href = "checkout.html";
             });
         }
