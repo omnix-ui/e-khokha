@@ -1,0 +1,354 @@
+/* --- 1️⃣ CSS VARIABLES (Colors Theme) --- */
+:root {
+    --primary-color: #ff3e6c; /* Pink/Coral like Meesho/Myntra */
+    --bg-light: #f5f6f8; /* Very light grey background */
+    --card-bg: #ffffff;
+    --text-dark: #282c3f;
+    --text-grey: #7e818c;
+    --success: #03a685;
+    --error: #ff3333;
+    --shadow-light: 0 2px 5px rgba(0,0,0,0.05);
+    --shadow-top: 0 -2px 10px rgba(0,0,0,0.06);
+}
+
+/* --- 2️⃣ BASE RESET --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent; /* Mobile tap highlight remove karega */
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    /* Header (60px) aur Bottom Nav (65px) ki wajah se content na chhupe isliye padding */
+    padding-top: 60px; 
+    padding-bottom: 70px; 
+}
+
+/* --- 3️⃣ TOP HEADER --- */
+.top-header {
+    position: fixed; /* Sticky ki jagah fixed mobile par zyada smooth chalta hai */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: var(--card-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    box-shadow: var(--shadow-light);
+    z-index: 1000;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+}
+
+.top-header .material-symbols-outlined {
+    font-size: 26px;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+/* --- 6️⃣ BOTTOM NAVIGATION --- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    background-color: var(--card-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: var(--shadow-top);
+    z-index: 1000;
+    padding-bottom: 4px; /* Modern phones ke bottom edge ke liye thoda margin */
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-grey);
+    gap: 4px;
+}
+
+.nav-item .material-symbols-outlined {
+    font-size: 24px;
+}
+
+.nav-item span {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Active State (Jo page khula hoga uska color primary ho jayega) */
+.nav-item.active {
+    color: var(--primary-color);
+}
+.nav-item.active .material-symbols-outlined {
+    /* Optional: Active state mein icon bhara hua dikhane ke liye font-weight bada sakte hain */
+    font-weight: 600; 
+}
+/* --- 2️⃣ SEARCH BAR --- */
+.search-container {
+    padding: 10px 16px;
+    background-color: var(--card-bg);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    padding: 8px 12px;
+    gap: 8px;
+}
+
+.search-box .material-symbols-outlined {
+    color: var(--text-grey);
+    font-size: 20px;
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 14px;
+    color: var(--text-dark);
+    outline: none;
+}
+
+/* --- 3️⃣ CATEGORIES --- */
+.categories-section {
+    padding: 12px 0 16px 0;
+    background-color: var(--card-bg);
+    margin-bottom: 8px; /* Agle section ke beech gap aayega */
+}
+
+.category-list {
+    display: flex;
+    gap: 16px;
+    padding: 0 16px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    /* Scrollbar hide karne ke liye */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.category-list::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+.category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 60px; /* Width fix rahegi taaki mobile pe pichke nahi */
+    cursor: pointer;
+}
+
+.cat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--bg-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-grey);
+}
+
+.cat-icon .material-symbols-outlined {
+    font-size: 24px;
+}
+
+.category-card span {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* Active Category (Jo select hogi uska color pink) */
+.category-card.active .cat-icon {
+    background-color: #ffe6ec; /* Very light pink background */
+    color: var(--primary-color);
+}
+.category-card.active span {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+/* --- 4️⃣ PROMOTIONAL BANNER --- */
+.banner-container {
+    padding: 8px 16px;
+    background-color: var(--bg-light); 
+}
+
+.promo-banner {
+    background: linear-gradient(135deg, var(--primary-color), #ff8a80);
+    border-radius: 12px;
+    padding: 24px 20px;
+    color: var(--card-bg); /* White text */
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-content h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+}
+
+.banner-content h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.shop-now-btn {
+    background-color: var(--card-bg);
+    color: var(--primary-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+/* --- 5️⃣ FEATURED PRODUCTS --- */
+.products-section {
+    padding: 16px;
+    background-color: var(--bg-light);
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 Barabar Columns */
+    gap: 12px;
+}
+
+.product-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-light);
+    cursor: pointer;
+}
+
+/* Wishlist Heart Icon */
+.wishlist-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.wishlist-icon .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--text-grey);
+}
+
+/* Dummy Image Area (4:5 Aspect Ratio for clothing/products) */
+.product-image {
+    width: 100%;
+    aspect-ratio: 4/5; 
+    background-color: #e9ecef; /* Light grey dummy color */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.product-info {
+    padding: 10px 8px;
+}
+
+/* Text Truncate (Agar naam lamba ho toh 1 line ke baad ... aa jayega) */
+.product-name {
+    font-size: 12px;
+    color: var(--text-grey);
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.price-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+
+.current-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.original-price {
+    font-size: 11px;
+    text-decoration: line-through;
+    color: var(--text-grey);
+}
+
+.discount {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--success);
+}
+
+.rating {
+    display: inline-table;
+    background-color: var(--success);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 12px;
+}

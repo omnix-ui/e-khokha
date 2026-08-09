@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkout - E-KHOKHA</title>
+    
+    <!-- Google Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <!-- Base & Checkout CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/checkout.css">
+</head>
+<body>
+
+    <!-- 1️⃣ CHECKOUT HEADER -->
+    <header class="checkout-header">
+        <a href="cart.html" class="header-icon">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <div class="header-title">Checkout</div>
+        <div class="header-icon" style="visibility: hidden;">
+            <span class="material-symbols-outlined">more_vert</span>
+        </div>
+    </header>
+
+    <!-- MAIN CHECKOUT CONTENT -->
+    <main class="checkout-main">
+        
+        <!-- 2️⃣ DELIVERY ADDRESS FORM -->
+        <section class="checkout-section">
+            <h2 class="section-title">Delivery Address</h2>
+            <form id="address-form" class="address-form">
+                <div class="input-group">
+                    <input type="text" id="fullName" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="mobile" placeholder="Mobile Number" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="house" placeholder="House / Flat / Building" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="street" placeholder="Street / Area" required>
+                </div>
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <input type="text" id="city" placeholder="City" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="state" placeholder="State" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="pincode" placeholder="Pincode" required>
+                </div>
+            </form>
+        </section>
+
+        <!-- 3️⃣ ORDER SUMMARY -->
+        <section class="checkout-section">
+            <h2 class="section-title">Order Summary</h2>
+            
+            <!-- JS yahan products insert karega -->
+            <div id="checkout-items-list"></div>
+
+            <div class="checkout-bill">
+                <div class="bill-row">
+                    <span>Item Total</span>
+                    <span id="checkout-item-total">₹0</span>
+                </div>
+                <div class="bill-row">
+                    <span>Delivery Fee</span>
+                    <span class="success-text">FREE</span>
+                </div>
+                <div class="bill-divider"></div>
+                <div class="bill-row grand-total">
+                    <span>Grand Total</span>
+                    <span id="checkout-grand-total">₹0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4️⃣ PAYMENT METHOD (Only COD) -->
+        <section class="checkout-section" style="margin-bottom: 90px;">
+            <h2 class="section-title">Payment Method</h2>
+            
+            <div class="payment-card cod-selected">
+                <div class="payment-icon">
+                    <span class="material-symbols-outlined">radio_button_checked</span>
+                </div>
+                <div class="payment-details">
+                    <div class="payment-name">Cash on Delivery (COD)</div>
+                    <div class="payment-desc">Pay in cash when your order is delivered.</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 5️⃣ FIXED PLACE ORDER FOOTER -->
+    <div class="place-order-footer">
+        <div class="checkout-total">
+            <span class="total-label">Amount to Pay</span>
+            <span class="total-amount" id="footer-pay-amount">₹0</span>
+        </div>
+        <button class="btn-place-order" id="place-order-btn">Place COD Order</button>
+    </div>
+
+    <!-- Scripts (Phase 2 mein checkout.js add karenge) -->
+    <script src="../js/app.js"></script>
+    <script src="../js/checkout.js"></script>
+</body>
+</html>

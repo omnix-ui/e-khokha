@@ -1,0 +1,514 @@
+/* --- PRODUCT PAGE BODY ADJUSTMENTS --- */
+body {
+    padding-top: 56px; /* Header height */
+    padding-bottom: 70px; /* Bottom action bar height */
+    background-color: var(--bg-light); 
+}
+
+/* --- 1️⃣ TOP HEADER --- */
+.product-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 56px;
+    background-color: var(--card-bg); /* White background */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 1000;
+    box-shadow: var(--shadow-light); 
+}
+
+.header-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--text-dark);
+    text-decoration: none;
+    background-color: var(--bg-light); /* Halka grey bg */
+    cursor: pointer;
+}
+
+.header-icon .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Cart Badge Styling */
+.cart-icon-wrapper {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid var(--bg-light);
+}
+
+/* --- 2️⃣ BOTTOM ACTION BAR --- */
+.bottom-action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    background-color: var(--card-bg);
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    gap: 12px;
+    box-shadow: var(--shadow-top);
+    z-index: 1000;
+}
+
+/* Dono buttons 50-50 space lenge flex: 1 ki wajah se */
+.btn-add-cart, .btn-buy-now {
+    flex: 1; 
+    height: 100%;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+}
+
+.btn-add-cart {
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    border: 1px solid #d4d5d9;
+}
+
+.btn-buy-now {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 6px rgba(255, 62, 108, 0.2);
+}
+/* --- 3️⃣ PRODUCT IMAGE GALLERY --- */
+.product-gallery {
+    background-color: var(--card-bg); /* White background */
+    padding-bottom: 16px;
+    margin-bottom: 8px; /* Agle section se alag dikhane ke liye grey gap */
+}
+
+.main-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5; /* Fashion/E-commerce ke liye standard size */
+    background-color: #f0f2f5;
+}
+
+.main-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* Bada Wishlist Icon Image ke upar */
+.wishlist-btn-large {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+    cursor: pointer;
+}
+
+.wishlist-btn-large .material-symbols-outlined {
+    color: var(--text-grey);
+    font-size: 24px;
+}
+
+/* Horizontal Thumbnails List */
+.thumbnail-list {
+    display: flex;
+    gap: 12px;
+    padding: 16px 16px 0 16px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    /* Scrollbar hide karne ke liye */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.thumbnail-list::-webkit-scrollbar {
+    display: none;
+}
+
+.thumb-placeholder {
+    min-width: 60px;
+    height: 75px;
+    background-color: #f0f2f5;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #adb5bd;
+    font-weight: 600;
+    border: 2px solid transparent; /* Normal state mein border invisible */
+    cursor: pointer;
+}
+
+/* Jo thumbnail select hoga uspe primary color ka border aayega */
+.thumb-placeholder.active {
+    border-color: var(--primary-color);
+    background-color: #fff;
+}
+/* --- 4️⃣ CORE PRODUCT INFO --- */
+.product-info-section {
+    background-color: var(--card-bg);
+    padding: 16px;
+    margin-bottom: 8px; /* Agle section (Options/Stock) se pehle thoda gap */
+}
+
+.product-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-dark);
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.product-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background-color: var(--success);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.rating-reviews {
+    font-size: 12px;
+    color: var(--text-grey);
+}
+
+.product-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.product-price-row .current-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.product-price-row .original-price {
+    font-size: 14px;
+    text-decoration: line-through;
+    color: var(--text-grey);
+}
+
+.product-price-row .discount-percent {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.tax-info {
+    font-size: 11px;
+    color: var(--success);
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+/* COD Badge Design */
+.cod-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f0fdf4; /* Ekdum light green background */
+    color: var(--success);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #bbf7d0;
+}
+
+.cod-badge .material-symbols-outlined {
+    font-size: 16px;
+}
+/* --- 5️⃣ PRODUCT OPTIONS & STOCK --- */
+.product-options-section {
+    background-color: var(--card-bg);
+    padding: 16px;
+    margin-bottom: 8px; /* Agle section se pehle gap */
+}
+
+.option-group {
+    margin-bottom: 20px;
+}
+
+.option-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.option-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.size-chart-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.size-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Size Buttons */
+.size-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid #d4d5d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    cursor: pointer;
+    background-color: var(--card-bg);
+}
+
+.size-btn.active {
+    border-color: var(--primary-color);
+    background-color: #ffe6ec;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.size-btn.disabled {
+    color: #adb5bd;
+    border-color: #e9ecef;
+    background-color: #f8f9fa;
+    text-decoration: line-through;
+    pointer-events: none; /* Click disable karne ke liye */
+}
+
+/* Quantity & Stock */
+.quantity-stock-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.quantity-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d4d5d9;
+    border-radius: 6px;
+    overflow: hidden;
+    width: fit-content;
+}
+
+.qty-btn {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dark);
+    background-color: #f8f9fa;
+}
+
+.qty-btn .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.qty-number {
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.stock-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--success);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px; /* Layout align karne ke liye */
+}
+
+.stock-status .material-symbols-outlined {
+    font-size: 18px;
+}
+/* --- 6️⃣ DELIVERY & SERVICES --- */
+.delivery-section, .description-section {
+    background-color: var(--card-bg);
+    padding: 16px;
+    margin-bottom: 8px;
+}
+
+.section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+}
+
+.pincode-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d4d5d9;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    background-color: var(--bg-light);
+}
+
+.pincode-box .material-symbols-outlined {
+    color: var(--text-grey);
+    font-size: 20px;
+    margin-right: 8px;
+}
+
+.pincode-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.check-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    padding-left: 8px;
+}
+
+.delivery-info-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.delivery-info-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-dark);
+}
+
+.delivery-info-list .material-symbols-outlined {
+    font-size: 20px;
+    color: var(--text-grey);
+}
+
+/* --- 7️⃣ PRODUCT DESCRIPTION & SPECS --- */
+.desc-text {
+    font-size: 13px;
+    color: var(--text-grey);
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.spec-box {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.spec-row {
+    display: flex;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.spec-row:last-child {
+    border-bottom: none;
+}
+
+.spec-key {
+    flex: 1;
+    padding: 12px;
+    background-color: #f8f9fa;
+    font-size: 12px;
+    color: var(--text-grey);
+    font-weight: 500;
+}
+
+.spec-value {
+    flex: 2;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--text-dark);
+    font-weight: 600;
+}

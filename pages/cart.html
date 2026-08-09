@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Your Cart - E-KHOKHA</title>
+    
+    <!-- Google Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- Cart Page Specific CSS -->
+    <link rel="stylesheet" href="../css/cart.css">
+</head>
+<body>
+
+    <!-- 1️⃣ CART HEADER -->
+    <header class="cart-header">
+        <a href="../index.html" class="header-icon">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <div class="header-title">Shopping Cart</div>
+        <div class="header-icon" style="visibility: hidden;">
+            <!-- Design ko center mein balance karne ke liye invisible icon -->
+            <span class="material-symbols-outlined">more_vert</span>
+        </div>
+    </header>
+
+    <!-- MAIN CART CONTENT -->
+    <main class="cart-main">
+        
+        <!-- 2️⃣ EMPTY CART STATE -->
+        <div class="empty-cart-state" id="empty-cart-state">
+            <div class="empty-cart-icon">
+                <span class="material-symbols-outlined">remove_shopping_cart</span>
+            </div>
+            <h2>Your cart is empty!</h2>
+            <p>Looks like you haven't added anything to your cart yet.</p>
+            <a href="../index.html" class="btn-shop-now">Go to Shop</a>
+        </div>
+
+        <!-- CART ITEMS (Dynamic Container) -->
+        <div class="cart-items-container" id="cart-items-container" style="display: none;">
+            
+            <!-- JS yahan dynamically products insert karega -->
+            <div id="cart-items-list"></div>
+
+            <!-- 4️⃣ ORDER SUMMARY (Bill Details) -->
+            <div class="order-summary">
+                <h3 class="summary-title">Bill Details</h3>
+                <div class="summary-row">
+                    <span class="summary-label">Item Total</span>
+                    <span class="summary-value" id="item-total">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Delivery Fee</span>
+                    <span class="summary-value success-text">FREE</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row grand-total">
+                    <span>Grand Total</span>
+                    <span id="grand-total">₹0</span>
+                </div>
+            </div>
+
+            <!-- 5️⃣ FIXED CHECKOUT FOOTER -->
+            <div class="checkout-footer">
+                <div class="checkout-total">
+                    <span class="total-label">Total Amount</span>
+                    <span class="total-amount" id="footer-total">₹0</span>
+                </div>
+                <button class="btn-proceed" id="proceed-btn" onclick="alert('Proceeding to Checkout! 🚀')">Proceed to Buy</button>
+            </div>
+
+        </div>
+    </main>
+
+        <!-- Global JS File -->
+    <script src="../js/app.js"></script>
+    <!-- Cart Page Specific JS -->
+    <script src="../js/cart.js"></script>
+</body>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>E-KHOKHA</title>
+    
+    <!-- Google Material Icons (Modern, clean icons) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <!-- CSS File Link -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1️⃣ STICKY HEADER -->
+    <header class="top-header">
+        <div class="header-left">
+            <span class="material-symbols-outlined">menu</span>
+            <div class="logo">E-खोखा</div>
+        </div>
+        <div class="header-right">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span class="material-symbols-outlined">person</span>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA (Baaki phases yahan aayenge) -->
+    <main class="main-content">
+        
+        <!-- 2️⃣ SEARCH BAR -->
+        <div class="search-container">
+            <div class="search-box">
+                <span class="material-symbols-outlined">search</span>
+                <!-- Readonly lagaya hai kyuki tap karne par baad mein search page khulega -->
+                <input type="text" placeholder="Search products..." readonly> 
+            </div>
+        </div>
+
+        <!-- 3️⃣ CATEGORIES (Horizontal Scroll) -->
+        <div class="categories-section">
+            <div class="category-list">
+                <div class="category-card active">
+                    <div class="cat-icon"><span class="material-symbols-outlined">apps</span></div>
+                    <span>All</span>
+                </div>
+                <div class="category-card">
+                    <div class="cat-icon"><span class="material-symbols-outlined">checkroom</span></div>
+                    <span>Fashion</span>
+                </div>
+                <div class="category-card">
+                    <div class="cat-icon"><span class="material-symbols-outlined">smartphone</span></div>
+                    <span>Gadgets</span>
+                </div>
+                <div class="category-card">
+                    <div class="cat-icon"><span class="material-symbols-outlined">face</span></div>
+                    <span>Beauty</span>
+                </div>
+                <div class="category-card">
+                    <div class="cat-icon"><span class="material-symbols-outlined">chair</span></div>
+                    <span>Home</span>
+                </div>
+                <div class="category-card">
+                    <div class="cat-icon"><span class="material-symbols-outlined">more_horiz</span></div>
+                    <span>More</span>
+                </div>
+            </div>
+        </div>
+        <!-- 4️⃣ PROMOTIONAL BANNER -->
+        <div class="banner-container">
+            <div class="promo-banner">
+                <div class="banner-content">
+                    <h3>BIG SALE</h3>
+                    <h2>UP TO 50% OFF</h2>
+                    <button class="shop-now-btn">SHOP NOW</button>
+                </div>
+            </div>
+        </div>
+        <!-- 5️⃣ FEATURED PRODUCTS -->
+        <div class="products-section">
+            <h3 class="section-title">Popular Products</h3>
+            <div class="product-grid">
+                
+                <!-- Product Card 1 -->
+                <div class="product-card" onclick="openProduct('Men Solid Casual T-Shirt', 399, 799)">
+                    <div class="wishlist-icon"><span class="material-symbols-outlined">favorite</span></div>
+                    <div class="product-image">
+                        <span>IMG</span>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-name">Men Solid Casual T-Shirt</p>
+                        <div class="price-row">
+                            <span class="current-price">₹399</span>
+                            <span class="original-price">₹799</span>
+                            <span class="discount">50% off</span>
+                        </div>
+                        <div class="rating">
+                            ★ 4.5
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 2 -->
+                <div class="product-card" onclick="openProduct('Wireless Bluetooth Earbuds', 899, 1999)">
+                    <div class="wishlist-icon"><span class="material-symbols-outlined">favorite</span></div>
+                    <div class="product-image">
+                        <span>IMG</span>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-name">Wireless Bluetooth Earbuds</p>
+                        <div class="price-row">
+                            <span class="current-price">₹899</span>
+                            <span class="original-price">₹1999</span>
+                            <span class="discount">55% off</span>
+                        </div>
+                        <div class="rating">
+                            ★ 4.2
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 3 (Design check karne ke liye) -->
+                <div class="product-card" onclick="openProduct('Sneakers For Men', 599, 999)">
+                    <div class="wishlist-icon"><span class="material-symbols-outlined">favorite</span></div>
+                    <div class="product-image">
+                        <span>IMG</span>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-name">Sneakers For Men</p>
+                        <div class="price-row">
+                            <span class="current-price">₹599</span>
+                            <span class="original-price">₹999</span>
+                            <span class="discount">40% off</span>
+                        </div>
+                        <div class="rating">
+                            ★ 3.8
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 4 -->
+                <div class="product-card" onclick="openProduct('Classic Aviator Sunglasses', 299, 499)">
+                    <div class="wishlist-icon"><span class="material-symbols-outlined">favorite</span></div>
+                    <div class="product-image">
+                        <span>IMG</span>
+                    </div>
+                    <div class="product-info">
+                        <p class="product-name">Classic Aviator Sunglasses</p>
+                        <div class="price-row">
+                            <span class="current-price">₹299</span>
+                            <span class="original-price">₹499</span>
+                            <span class="discount">40% off</span>
+                        </div>
+                        <div class="rating">
+                            ★ 4.0
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 6️⃣ BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <span class="material-symbols-outlined">home</span>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="material-symbols-outlined">category</span>
+            <span>Categories</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span>Cart</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="material-symbols-outlined">list_alt</span>
+            <span>Orders</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="material-symbols-outlined">person</span>
+            <span>Account</span>
+        </a>
+    </nav>
+  <script src="js/app.js"></script>
+</body>
+</html>
