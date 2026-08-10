@@ -1,3 +1,6 @@
+// Ye line file ke sabse top par honi chahiye
+let cart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
+
 // --- CART PAGE LOGIC & INTERACTIVITY --- //
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -89,3 +92,25 @@ window.updateQty = function(index, change) {
     updateCartBadge();
     renderCart();
 };
+// --- PROCEED TO CHECKOUT LOGIC (Route 2: Cart Page se) --- //
+const proceedBtn = document.getElementById('proceed-btn'); 
+
+if (proceedBtn) {
+    proceedBtn.addEventListener('click', (e) => {
+        // Ye line kisi bhi default action ko rok degi
+        e.preventDefault(); 
+        
+        let currentCart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
+        
+        if (currentCart.length === 0) {
+            alert("Cart khali hai, pehle kuch add kijiye!");
+            return;
+        }
+
+        // Traffic police ko batana ki hum Cart page se aa rahe hain
+        localStorage.setItem('eKhokhaCheckoutMode', 'route_cart');
+        
+        // Checkout page par bhejna
+        window.location.href = "checkout.html"; 
+    });
+}

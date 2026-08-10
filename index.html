@@ -20,7 +20,12 @@
             <div class="logo">E-खोखा</div>
         </div>
         <div class="header-right">
-            <span class="material-symbols-outlined">shopping_cart</span>
+            <!-- 🛒 Yahan cart icon ko 'a' tag me wrap kiya hai taaki click ho sake -->
+            <a href="pages/cart.html"class="cart-icon-wrapper" style="text-decoration: none; color: inherit; position: relative;">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <!-- Ye badge hai jo app.js se automatic update hoga -->
+                <span id="cart-badge" class="cart-badge" style="display: none;">0</span>
+            </a>
             <span class="material-symbols-outlined">person</span>
         </div>
     </header>
@@ -164,7 +169,8 @@
 
     <!-- 6️⃣ BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
-        <a href="#" class="nav-item active">
+        <!-- Home page ke liye index.html -->
+        <a href="index.html" class="nav-item active">
             <span class="material-symbols-outlined">home</span>
             <span>Home</span>
         </a>
@@ -172,19 +178,22 @@
             <span class="material-symbols-outlined">category</span>
             <span>Categories</span>
         </a>
-        <a href="#" class="nav-item">
+        <!-- 🛒 CART BUTTON LINK (Yahan 'pages/cart.html' laga diya) -->
+        <a href="pages/cart.html" class="nav-item">
             <span class="material-symbols-outlined">shopping_cart</span>
             <span>Cart</span>
         </a>
-        <a href="#" class="nav-item">
+        <!-- Aage ke pages ke links bhi ready kar diye -->
+        <a href="pages/orders.html" class="nav-item">
             <span class="material-symbols-outlined">list_alt</span>
             <span>Orders</span>
         </a>
-        <a href="#" class="nav-item">
+        <a href="pages/account.html" class="nav-item">
             <span class="material-symbols-outlined">person</span>
             <span>Account</span>
         </a>
     </nav>
+
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -8,14 +8,15 @@ function renderCheckoutSummary() {
     const checkoutItemsList = document.getElementById('checkout-items-list');
     let checkoutItems = [];
     
-    // Check karo ki user Cart se aaya hai ya Buy Now se
+    // Check karo ki user Cart se aaya hai ya Product Page se
     const checkoutMode = localStorage.getItem('eKhokhaCheckoutMode');
 
-    if (checkoutMode === 'buynow') {
-        // Buy Now wala single item uthao
+    // 🔴 UPDATE: 'buynow' ki jagah 'route_product'
+    if (checkoutMode === 'route_product') {
         checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCheckoutData')) || [];
-    } else {
-        // Normal Cart wale items uthao
+    } 
+    // 🔴 UPDATE: explicitly 'route_cart' check kar rahe hain
+    else if (checkoutMode === 'route_cart') {
         checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
     }
 
@@ -64,10 +65,10 @@ const placeOrderBtn = document.getElementById('place-order-btn');
 if (placeOrderBtn) {
     placeOrderBtn.addEventListener('click', () => {
         
-        // 1. Form Validation (Check karna ki address poora bhara hai ya nahi)
+        // 1. Form Validation
         const addressForm = document.getElementById('address-form');
         if (!addressForm.checkValidity()) {
-            addressForm.reportValidity(); // HTML5 ka default error popup dikhayega
+            addressForm.reportValidity(); 
             return;
         }
 
@@ -75,22 +76,20 @@ if (placeOrderBtn) {
         let checkoutItems = [];
         const checkoutMode = localStorage.getItem('eKhokhaCheckoutMode');
 
-        // Yahan par hum check kar rahe hain ki data kahan se uthana hai
-        if (checkoutMode === 'buynow') {
+        // 🔴 UPDATE: Yahan bhi naye names use kiye hain
+        if (checkoutMode === 'route_product') {
             checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCheckoutData')) || [];
-        } else {
+        } else if (checkoutMode === 'route_cart') {
             checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
         }
 
-        // Total calculate karo based on actual checkout items
         let totalAmount = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
         
-        // Ek random 6 digit Order ID generate karna
         const orderId = "EKHOKHA-" + Math.floor(100000 + Math.random() * 900000);
 
         const latestOrder = {
             orderId: orderId,
-            items: checkoutItems, // Yahan sahi data jayega
+            items: checkoutItems, 
             total: totalAmount,
             address: {
                 name: document.getElementById('fullName').value,
@@ -101,16 +100,14 @@ if (placeOrderBtn) {
             date: new Date().toLocaleDateString()
         };
 
-        // Order ki details localStorage mein save karna taaki Success Page par dikha sakein
         localStorage.setItem('eKhokhaLatestOrder', JSON.stringify(latestOrder));
 
         // 3. Cart aur Temporary data ko clean karna
-        if (checkoutMode === 'cart') {
-            // Agar normal cart se checkout tha, tabhi cart khali karo
+        // 🔴 UPDATE: 'cart' ki jagah 'route_cart' check kar rahe hain
+        if (checkoutMode === 'route_cart') {
             localStorage.setItem('eKhokhaCart', JSON.stringify([]));
         }
         
-        // Buy Now wala temporary data clear kardo (chahe mode koi bhi ho)
         localStorage.removeItem('eKhokhaCheckoutData');
         localStorage.removeItem('eKhokhaCheckoutMode');
 

@@ -27,13 +27,14 @@
             <div class="header-icon">
                 <span class="material-symbols-outlined">share</span>
             </div>
-            <div class="header-icon cart-icon-wrapper">
+            <!-- 🛒 CART BUTTON LINK (div ko 'a' tag banaya aur href="cart.html" diya) -->
+            <a href="cart.html" class="header-icon cart-icon-wrapper" style="text-decoration: none; color: inherit;">
                 <span class="material-symbols-outlined">shopping_cart</span>
-                <span class="cart-badge" id="cart-badge">0</span> <!-- Dummy Cart Count -->
-            </div>
+                <span class="cart-badge" id="cart-badge" style="display: none;">0</span> 
+            </a>
         </div>
     </header>
-    
+
     <!-- MAIN CONTENT AREA -->
     <main class="product-main">
         
