@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Order - E-KHOKHA</title>
+    
+    <!-- Google Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/order.css">
+</head>
+<body>
+
+    <!-- 1️⃣ ORDES PAGE HEADER -->
+<header class="top-header">
+    <a href="#" onclick="handleBackButton(event)" class="header-icon">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <div class="header-title">My Order</div>
+    <a href="#" class="header-icon">
+        <span class="material-symbols-outlined">search</span>
+    </a>
+</header>
+
+    <!-- 2️⃣ ORDER FILTERS (Horizontal Tabs) -->
+    <div class="order-filters-container">
+        <ul class="order-filters">
+            <li class="filter-tab active" data-status="all">All</li>
+            <li class="filter-tab" data-status="pending">Pending</li>
+            <li class="filter-tab" data-status="shipped">Shipped</li>
+            <li class="filter-tab" data-status="delivered">Delivered</li>
+            <li class="filter-tab" data-status="cancelled">Cancelled</li>
+        </ul>
+    </div>
+    
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="order-main">
+        
+        <!-- 8️⃣ EMPTY STATE (Hidden by default, JS se show hoga) -->
+        <div id="empty-state" class="state-container" style="display: none;">
+            <span class="material-symbols-outlined empty-icon">inventory_2</span>
+            <h2>No Order Yet</h2>
+            <p>You haven't placed any order yet.</p>
+            <a href="../index.html" class="btn-start-shopping">Start Shopping</a>
+        </div>
+
+        <!-- Yahan JS se saare order cards generate honge -->
+        <div id="order-list-container">
+            <!-- Cards aayenge yahan -->
+        </div>
+
+    </main>
+
+    <!-- 7️⃣ ORDER DETAILS MODAL (Hidden by default) -->
+    <div class="order-modal-overlay" id="order-modal">
+        <div class="order-modal-content">
+            
+            <div class="modal-header">
+                <div class="modal-title">Order Details</div>
+                <button class="close-modal-btn" onclick="closeOrderModal()">&times;</button>
+            </div>
+            
+            <div class="modal-section">
+                <div class="modal-detail-row"><span>Order ID:</span> <span id="modal-order-id" style="font-weight: bold;"></span></div>
+                <div class="modal-detail-row"><span>Order Date:</span> <span id="modal-order-date"></span></div>
+                <div class="modal-detail-row"><span>Status:</span> <span id="modal-order-status" style="font-weight: bold;"></span></div>
+                <div class="modal-detail-row"><span>Estimated Delivery:</span> <span id="modal-est-delivery"></span></div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">All Items</div>
+                <!-- JS yahan saare products inject karega -->
+                <div id="modal-products-list"></div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">Payment Summary</div>
+                <div class="modal-detail-row"><span>Payment Method:</span> <span id="modal-payment-method"></span></div>
+                <div class="modal-detail-row"><span style="font-weight: bold;">Total Amount:</span> <span id="modal-total-amount" style="font-weight: bold; color: #fd4f6a; font-size: 16px;"></span></div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">Delivery Address</div>
+                <div class="modal-address-text" id="modal-address"></div>
+            </div>
+
+        </div>
+    </div>
+
+<!-- 1️⃣1️⃣ BOTTOM NAVIGATION -->
+<nav class="bottom-nav">
+    <a href="../index.html" class="nav-item">
+        <span class="material-symbols-outlined">home</span>
+        <span>Home</span>
+    </a>
+    <a href="#" class="nav-item">
+        <span class="material-symbols-outlined">category</span>
+        <span>Categories</span>
+    </a>
+    <a href="cart.html" class="nav-item">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span>Cart</span>
+    </a>
+    <!-- ORDER TAB ACTIVE/HIGHLIGHTED HAI -->
+    <a href="order.html" class="nav-item active">
+        <span class="material-symbols-outlined">list_alt</span>
+        <span>Order</span>
+    </a>
+    <a href="account.html" class="nav-item">
+        <span class="material-symbols-outlined">person</span>
+        <span>Account</span>
+    </a>
+</nav>
+    <!-- Scripts Link -->
+    <script src="../js/app.js"></script>
+    <script src="../js/order.js"></script>
+</body>
+</html>

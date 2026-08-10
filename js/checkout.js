@@ -76,7 +76,6 @@ if (placeOrderBtn) {
         let checkoutItems = [];
         const checkoutMode = localStorage.getItem('eKhokhaCheckoutMode');
 
-        // 🔴 UPDATE: Yahan bhi naye names use kiye hain
         if (checkoutMode === 'route_product') {
             checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCheckoutData')) || [];
         } else if (checkoutMode === 'route_cart') {
@@ -87,6 +86,7 @@ if (placeOrderBtn) {
         
         const orderId = "EKHOKHA-" + Math.floor(100000 + Math.random() * 900000);
 
+        // 🔴 EXACT ORIGINAL ADDRESS VARIABLES
         const latestOrder = {
             orderId: orderId,
             items: checkoutItems, 
@@ -97,13 +97,19 @@ if (placeOrderBtn) {
                 pincode: document.getElementById('pincode').value
             },
             paymentMethod: "Cash on Delivery",
-            date: new Date().toLocaleDateString()
+            date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            status: "Pending" // Bas ye naya hai Order page ke liye
         };
 
+        // A) Success Page Data
         localStorage.setItem('eKhokhaLatestOrder', JSON.stringify(latestOrder));
 
+        // B) Order History (Orders Page) ke liye
+        let userOrders = JSON.parse(localStorage.getItem('eKhokhaUserOrders')) || [];
+        userOrders.push(latestOrder);
+        localStorage.setItem('eKhokhaUserOrders', JSON.stringify(userOrders));
+
         // 3. Cart aur Temporary data ko clean karna
-        // 🔴 UPDATE: 'cart' ki jagah 'route_cart' check kar rahe hain
         if (checkoutMode === 'route_cart') {
             localStorage.setItem('eKhokhaCart', JSON.stringify([]));
         }
