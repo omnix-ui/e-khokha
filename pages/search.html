@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Search - E-KHOKHA</title>
+    
+    <!-- Google Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/search.css">
+</head>
+<body>
+
+    <!-- 1️⃣ SEARCH HEADER -->
+    <header class="search-header">
+        <a href="#" onclick="window.history.back(); return false;" class="header-icon">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        
+        <div class="search-input-wrapper">
+            <span class="material-symbols-outlined search-icon-left">search</span>
+            <!-- 'autofocus' attr se tap karte hi keyboard khulega -->
+            <input type="text" id="search-input" placeholder="Search products, categories..." autofocus autocomplete="off">
+            
+            <button id="clear-btn" class="clear-search-btn" style="display: none;">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN SEARCH CONTENT -->
+    <main class="search-main">
+        
+        <!-- Result Count Summary (JS se show hoga) -->
+        <div id="search-summary" class="search-summary" style="display: none;">
+            <span id="result-count">0 products found</span>
+        </div>
+
+        <!-- STATE 1: Initial Empty State -->
+        <div id="state-initial" class="search-state-container">
+            <span class="material-symbols-outlined empty-icon">manage_search</span>
+            <h2>What are you looking for?</h2>
+            <p>Search for t-shirts, shoes, earbuds and more.</p>
+        </div>
+
+        <!-- STATE 2: No Results Found -->
+        <div id="state-no-results" class="search-state-container" style="display: none;">
+            <span class="material-symbols-outlined empty-icon">search_off</span>
+            <h2>No products found</h2>
+            <p>Try searching with a different keyword.</p>
+        </div>
+
+        <!-- STATE 3: The Results Grid -->
+        <!-- Teri style.css ki .product-grid class use ki hai taaki design same rahe -->
+        <div id="search-results-grid" class="product-grid" style="display: none; padding: 15px;">
+            <!-- JS yahan dynamically product cards render karega -->
+        </div>
+
+    </main>
+
+    <!-- Scripts Link -->
+    <script src="../js/app.js"></script>
+    <script src="../js/search.js"></script> <!-- Nayi Search JS -->
+</body>
+</html>

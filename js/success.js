@@ -15,12 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('success-amount').innerText = '₹' + latestOrder.total;
     
     // Address format
-    const addr = latestOrder.address;
-    document.getElementById('success-address').innerText = `${addr.name}, ${addr.pincode}`;
+    const completeAddressHTML = `
+        <strong>${latestOrder.address.name}</strong><br>
+        ${latestOrder.address.house}, ${latestOrder.address.street}<br>
+        ${latestOrder.address.city}, ${latestOrder.address.state} - ${latestOrder.address.pincode}<br>
+        Mobile: ${latestOrder.address.mobile}
+    `;
+    
+    document.getElementById('success-address').innerHTML = completeAddressHTML;
 
-    // Estimated Delivery Date logic (Aaj se 4 din baad)
-    const today = new Date();
-    today.setDate(today.getDate() + 4); 
-    const options = { weekday: 'short', month: 'short', day: 'numeric' };
-    document.getElementById('success-date').innerText = "By " + today.toLocaleDateString('en-IN', options);
+    // 🔴 PHASE 2 FIX: Ab calculate nahi karna, seedha order object se read karna hai
+    const deliveryDate = latestOrder.estimatedDelivery ? latestOrder.estimatedDelivery : "Processing...";
+    document.getElementById('success-date').innerText = "By " + deliveryDate;
 });

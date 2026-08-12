@@ -1,6 +1,3 @@
-// Ye line file ke sabse top par honi chahiye
-let cart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
-
 // --- CART PAGE LOGIC & INTERACTIVITY --- //
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function renderCart() {
+    let cart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
+    
     const emptyCartState = document.getElementById('empty-cart-state');
     const cartContainer = document.getElementById('cart-items-container');
     const cartItemsList = document.getElementById('cart-items-list');
@@ -24,37 +23,50 @@ function renderCart() {
     emptyCartState.style.display = 'none';
     cartContainer.style.display = 'block';
     
-    // Purana HTML clear karo naya dalne se pehle
     cartItemsList.innerHTML = ''; 
     let totalAmount = 0;
 
     // 3. Har item ke liye ek card banao
-    cart.forEach((item, index) => {
-        let itemTotal = item.price * item.quantity;
+    cart.forEach((item) => {
+        
+        // 🔴 PHASE 4 UPGRADE: Database Join Logic
+        // Cart array mein ab sirf {product_id, size, quantity} hai. Baaki DB se aayega!
+        const productData = getProductById(item.product_id); // app.js se function call kiya
+        
+        // Agar by chance DB mein product nahi mila (corrupted data), toh skip kar do
+        if (!productData) return; 
+
+        // Master DB se live data uthao
+        const currentName = productData.basic_info.name;
+        const currentPrice = productData.pricing.current_price;
+        const currentImage = productData.images[0] || 'IMG';
+
+        // Total live price se calculate hoga
+        let itemTotal = currentPrice * item.quantity;
         totalAmount += itemTotal;
 
         const itemDiv = document.createElement('div');
         itemDiv.className = 'cart-item';
         
-        // HTML structure bilkul wahi hai jo tune CSS mein design kiya tha
         itemDiv.innerHTML = `
             <div class="cart-item-image">
-                <span>${item.image}</span>
+                <img src="${currentImage}" alt="${currentName}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
             </div>
+
             <div class="cart-item-info">
                 <div class="item-title-row">
-                    <div class="item-title">${item.name}</div>
-                    <button class="item-delete-btn" onclick="removeItem(${index})">
+                    <div class="item-title">${currentName}</div>
+                    <button class="item-delete-btn" onclick="removeItem('${item.product_id}', '${item.size}')">
                         <span class="material-symbols-outlined">delete</span>
                     </button>
                 </div>
                 <div class="item-size">Size: <b>${item.size}</b></div>
                 <div class="item-price-row">
-                    <div class="item-price">₹${item.price}</div>
+                    <div class="item-price">₹${currentPrice}</div>
                     <div class="item-qty-controls">
-                        <button class="qty-btn-small" onclick="updateQty(${index}, -1)"><span class="material-symbols-outlined">remove</span></button>
+                        <button class="qty-btn-small" onclick="updateQty('${item.product_id}', '${item.size}', -1)"><span class="material-symbols-outlined">remove</span></button>
                         <span class="qty-number-small">${item.quantity}</span>
-                        <button class="qty-btn-small" onclick="updateQty(${index}, 1)"><span class="material-symbols-outlined">add</span></button>
+                        <button class="qty-btn-small" onclick="updateQty('${item.product_id}', '${item.size}', 1)"><span class="material-symbols-outlined">add</span></button>
                     </div>
                 </div>
             </div>
@@ -70,34 +82,40 @@ function renderCart() {
 
 // --- BUTTONS LOGIC (+ / - / DELETE) --- //
 
-// Delete button ka logic
-window.removeItem = function(index) {
-    cart.splice(index, 1); // Array se item hatao
-    localStorage.setItem('eKhokhaCart', JSON.stringify(cart)); // Naya array save karo
-    updateCartBadge(); // Upar badge ka number update karo (app.js se)
-    renderCart(); // Screen refresh karo
+window.removeItem = function(productId, size) {
+    let cart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
+    
+    // Smart Delete
+    cart = cart.filter(item => !(item.product_id === productId && item.size === size));
+    
+    localStorage.setItem('eKhokhaCart', JSON.stringify(cart)); 
+    updateCartBadge(); 
+    renderCart(); 
 };
 
-// Quantity increase / decrease ka logic
-window.updateQty = function(index, change) {
-    // Agar quantity 1 hai aur user '-' dabata hai, toh item delete kardo
-    if (change === -1 && cart[index].quantity === 1) {
-        removeItem(index);
-        return;
-    }
+window.updateQty = function(productId, size, change) {
+    let cart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
     
-    // Warna quantity badha ya ghata do
-    cart[index].quantity += change;
-    localStorage.setItem('eKhokhaCart', JSON.stringify(cart));
-    updateCartBadge();
-    renderCart();
+    const index = cart.findIndex(item => item.product_id === productId && item.size === size);
+    
+    if (index > -1) {
+        if (change === -1 && cart[index].quantity === 1) {
+            removeItem(productId, size);
+            return;
+        }
+        
+        cart[index].quantity += change;
+        localStorage.setItem('eKhokhaCart', JSON.stringify(cart));
+        updateCartBadge();
+        renderCart();
+    }
 };
-// --- PROCEED TO CHECKOUT LOGIC (Route 2: Cart Page se) --- //
+
+// --- PROCEED TO CHECKOUT LOGIC --- //
 const proceedBtn = document.getElementById('proceed-btn'); 
 
 if (proceedBtn) {
     proceedBtn.addEventListener('click', (e) => {
-        // Ye line kisi bhi default action ko rok degi
         e.preventDefault(); 
         
         let currentCart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
@@ -107,10 +125,7 @@ if (proceedBtn) {
             return;
         }
 
-        // Traffic police ko batana ki hum Cart page se aa rahe hain
         localStorage.setItem('eKhokhaCheckoutMode', 'route_cart');
-        
-        // Checkout page par bhejna
         window.location.href = "checkout.html"; 
     });
 }

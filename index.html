@@ -34,43 +34,21 @@
     <main class="main-content">
         
         <!-- 2️⃣ SEARCH BAR -->
-        <div class="search-container">
+        <div class="search-container" onclick="window.location.href='pages/search.html'" style="cursor: pointer;">
             <div class="search-box">
                 <span class="material-symbols-outlined">search</span>
-                <!-- Readonly lagaya hai kyuki tap karne par baad mein search page khulega -->
-                <input type="text" placeholder="Search products..." readonly> 
+                <!-- Readonly lagaya hai kyuki tap karne par search page khulega -->
+                <input type="text" placeholder="Search products..." readonly style="cursor: pointer;"> 
             </div>
         </div>
 
         <!-- 3️⃣ CATEGORIES (Horizontal Scroll) -->
         <div class="categories-section">
-            <div class="category-list">
-                <div class="category-card active">
-                    <div class="cat-icon"><span class="material-symbols-outlined">apps</span></div>
-                    <span>All</span>
-                </div>
-                <div class="category-card">
-                    <div class="cat-icon"><span class="material-symbols-outlined">checkroom</span></div>
-                    <span>Fashion</span>
-                </div>
-                <div class="category-card">
-                    <div class="cat-icon"><span class="material-symbols-outlined">smartphone</span></div>
-                    <span>Gadgets</span>
-                </div>
-                <div class="category-card">
-                    <div class="cat-icon"><span class="material-symbols-outlined">face</span></div>
-                    <span>Beauty</span>
-                </div>
-                <div class="category-card">
-                    <div class="cat-icon"><span class="material-symbols-outlined">chair</span></div>
-                    <span>Home</span>
-                </div>
-                <div class="category-card">
-                    <div class="cat-icon"><span class="material-symbols-outlined">more_horiz</span></div>
-                    <span>More</span>
-                </div>
+            <div class="category-list" id="home-category-list">
+                <!-- Javascript will dynamically load categories here -->
             </div>
         </div>
+
         <!-- 4️⃣ PROMOTIONAL BANNER -->
         <div class="banner-container">
             <div class="promo-banner">
@@ -84,84 +62,10 @@
         <!-- 5️⃣ FEATURED PRODUCTS -->
         <div class="products-section">
             <h3 class="section-title">Popular Products</h3>
-            <div class="product-grid">
-                
-                <!-- Product Card 1 -->
-                <div class="product-card" onclick="openProduct('Men Solid Casual T-Shirt', 399, 799)">
-                    <div class="wishlist-icon"><span class="material-symbols-outlined">favorite</span></div>
-                    <div class="product-image">
-                        <span>IMG</span>
-                    </div>
-                    <div class="product-info">
-                        <p class="product-name">Men Solid Casual T-Shirt</p>
-                        <div class="price-row">
-                            <span class="current-price">₹399</span>
-                            <span class="original-price">₹799</span>
-                            <span class="discount">50% off</span>
-                        </div>
-                        <div class="rating">
-                            ★ 4.5
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Card 2 -->
-                <div class="product-card" onclick="openProduct('Wireless Bluetooth Earbuds', 899, 1999)">
-                    <div class="wishlist-icon"><span class="material-symbols-outlined">favorite</span></div>
-                    <div class="product-image">
-                        <span>IMG</span>
-                    </div>
-                    <div class="product-info">
-                        <p class="product-name">Wireless Bluetooth Earbuds</p>
-                        <div class="price-row">
-                            <span class="current-price">₹899</span>
-                            <span class="original-price">₹1999</span>
-                            <span class="discount">55% off</span>
-                        </div>
-                        <div class="rating">
-                            ★ 4.2
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Card 3 (Design check karne ke liye) -->
-                <div class="product-card" onclick="openProduct('Sneakers For Men', 599, 999)">
-                    <div class="wishlist-icon"><span class="material-symbols-outlined">favorite</span></div>
-                    <div class="product-image">
-                        <span>IMG</span>
-                    </div>
-                    <div class="product-info">
-                        <p class="product-name">Sneakers For Men</p>
-                        <div class="price-row">
-                            <span class="current-price">₹599</span>
-                            <span class="original-price">₹999</span>
-                            <span class="discount">40% off</span>
-                        </div>
-                        <div class="rating">
-                            ★ 3.8
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Card 4 -->
-                <div class="product-card" onclick="openProduct('Classic Aviator Sunglasses', 299, 499)">
-                    <div class="wishlist-icon"><span class="material-symbols-outlined">favorite</span></div>
-                    <div class="product-image">
-                        <span>IMG</span>
-                    </div>
-                    <div class="product-info">
-                        <p class="product-name">Classic Aviator Sunglasses</p>
-                        <div class="price-row">
-                            <span class="current-price">₹299</span>
-                            <span class="original-price">₹499</span>
-                            <span class="discount">40% off</span>
-                        </div>
-                        <div class="rating">
-                            ★ 4.0
-                        </div>
-                    </div>
-                </div>
-
+            
+            <!-- 🔴 KHALI DABBA: JS YAHAN PRODUCTS LOOP KAREGA -->
+            <div class="product-grid" id="home-product-grid">
+                <!-- Javascript will generate product cards here -->
             </div>
         </div>
 
@@ -174,7 +78,7 @@
             <span class="material-symbols-outlined">home</span>
             <span>Home</span>
         </a>
-        <a href="#" class="nav-item">
+        <a href="pages/category.html" class="nav-item">
             <span class="material-symbols-outlined">category</span>
             <span>Categories</span>
         </a>

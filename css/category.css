@@ -1,0 +1,91 @@
+/* =========================================
+   📂 CATEGORY PAGE STYLING
+========================================= */
+body {
+    background-color: #f8f9fa;
+}
+
+.category-main {
+    padding-top: px;
+    padding-bottom: 80px;
+}
+
+/* --- HORIZONTAL CATEGORY TABS --- */
+.category-tabs-container {
+    background: #fff;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    position: sticky;
+    top: 55px; /* Stick below header */
+    z-index: 10;
+}
+.category-tabs-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+.cat-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #636e72;
+    min-width: 60px;
+    transition: all 0.2s ease;
+}
+
+.cat-tab .icon-box {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.cat-tab .cat-name {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Active State */
+.cat-tab.active {
+    color: #fd4f6a;
+}
+.cat-tab.active .icon-box {
+    background: #fd4f6a;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(253, 79, 106, 0.3);
+}
+
+/* --- PRODUCTS GRID --- */
+.category-products {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* --- EMPTY STATE --- */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    text-align: center;
+    color: #636e72;
+}
+.empty-state span {
+    font-size: 60px !important;
+    color: #dfe6e9;
+    margin-bottom: 10px;
+}

@@ -35,33 +35,26 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT AREA -->
+<!-- MAIN CONTENT AREA -->
     <main class="product-main">
         
         <!-- 3️⃣ PRODUCT IMAGE GALLERY -->
         <div class="product-gallery">
             <!-- Main Image -->
             <div class="main-image-container">
-                <div class="wishlist-btn-large">
-                    <span class="material-symbols-outlined">favorite</span>
-                </div>
-                <div class="main-image-placeholder">
-                    <span>MAIN PRODUCT IMAGE</span>
-                </div>
+              
+                <!-- 🔴 MAIN IMAGE: JS yahan images[0] daalega -->
+                <img id="main-product-image" src="" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block;">
             </div>
             
             <!-- Thumbnails -->
-            <div class="thumbnail-list">
-                <div class="thumb-placeholder active">IMG 1</div>
-                <div class="thumb-placeholder">IMG 2</div>
-                <div class="thumb-placeholder">IMG 3</div>
-                <div class="thumb-placeholder">IMG 4</div>
-                <div class="thumb-placeholder">IMG 5</div>
-            </div>
+            <!-- 🔴 KHALI DABBA: JS yahan saari gallery images loop karega -->
+            <div class="thumbnail-list" id="thumbnail-list"></div>
         </div>
-                <!-- 4️⃣ CORE PRODUCT INFO -->
+
+        <!-- 4️⃣ CORE PRODUCT INFO -->
         <div class="product-info-section">
-            <h1 class="product-title">Men Solid Casual T-Shirt - Premium Cotton, Regular Fit</h1>
+            <h1 class="product-title">Loading...</h1>
             
             <div class="product-rating-row">
                 <div class="rating-badge">
@@ -72,8 +65,8 @@
             </div>
 
             <div class="product-price-row">
-                <span class="current-price">₹399</span>
-                <span class="original-price">₹799</span>
+                <span class="current-price">₹0</span>
+                <span class="original-price">₹0</span>
                 <span class="discount-percent">50% OFF</span>
             </div>
 
@@ -84,23 +77,18 @@
                 <span>Cash on Delivery Available</span>
             </div>
         </div>
+        
         <!-- 5️⃣ PRODUCT OPTIONS & STOCK -->
         <div class="product-options-section">
             
             <!-- Size Selection -->
             <div class="option-group">
                 <div class="option-header">
-                    <span class="option-title">Select Size</span>
+                    <span class="option-title">Select Size/Variant</span>
                     <span class="size-chart-link">Size Chart</span>
                 </div>
-                <div class="size-list">
-                    <div class="size-btn">S</div>
-                    <div class="size-btn active">M</div>
-                    <div class="size-btn">L</div>
-                    <div class="size-btn">XL</div>
-                    <!-- Out of stock size ke liye disabled class -->
-                    <div class="size-btn disabled">XXL</div> 
-                </div>
+                <!-- 🔴 KHALI DABBA: JS YAHAN SIZES BHAREGA -->
+                <div class="size-list"></div>
             </div>
 
             <!-- Quantity & Stock Row -->
@@ -114,13 +102,12 @@
                     </div>
                 </div>
                 
-                <div class="stock-status">
-                    <span class="material-symbols-outlined">check_circle</span>
-                    <span>In Stock</span>
-                </div>
+                <!-- 🔴 KHALI DABBA: JS YAHAN IN-STOCK DALEGA -->
+                <div class="stock-status"></div>
             </div>
 
         </div>
+        
         <!-- 6️⃣ DELIVERY & SERVICES -->
         <div class="delivery-section">
             <h3 class="section-title">Delivery Options</h3>
@@ -150,32 +137,12 @@
         <!-- 7️⃣ PRODUCT DESCRIPTION & SPECS -->
         <div class="description-section">
             <h3 class="section-title">Product Details</h3>
-            <p class="desc-text">Upgrade your casual wardrobe with this premium solid cotton t-shirt. Designed for all-day comfort, it features a regular fit that flatters every body type.</p>
+            <!-- 🔴 CLASS CHANGED TO MATCH JS -->
+            <p class="product-description">Loading details...</p>
             
-            <div class="spec-box">
-                <div class="spec-row">
-                    <span class="spec-key">Fabric</span>
-                    <span class="spec-value">100% Cotton</span>
-                </div>
-                <div class="spec-row">
-                    <span class="spec-key">Fit</span>
-                    <span class="spec-value">Regular Fit</span>
-                </div>
-                <div class="spec-row">
-                    <span class="spec-key">Neck</span>
-                    <span class="spec-value">Round Neck</span>
-                </div>
-                <div class="spec-row">
-                    <span class="spec-key">Pattern</span>
-                    <span class="spec-value">Solid</span>
-                </div>
-                <div class="spec-row">
-                    <span class="spec-key">What's in the box</span>
-                    <span class="spec-value">1 T-Shirt</span>
-                </div>
-            </div>
+            <!-- 🔴 KHALI DABBA & CLASS CHANGED: JS YAHAN SPECS BHAREGA -->
+            <div class="specs-list"></div>
         </div>
-
     </main>
 
     <!-- 2️⃣ BOTTOM FIXED ACTION BAR -->
@@ -185,7 +152,5 @@
     </div>
     <!-- Main JS File -->
     <script src="../js/app.js"></script>
-</body>
-
 </body>
 </html>

@@ -1,0 +1,112 @@
+/* =========================================
+   🔍 SEARCH PAGE SPECIFIC STYLING
+========================================= */
+body {
+    background-color: #f8f9fa;
+    margin: 0;
+}
+
+/* --- SEARCH HEADER --- */
+.search-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    gap: 8px;
+}
+
+.search-input-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background-color: #f0f2f5;
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 42px;
+}
+
+.search-icon-left {
+    color: #636e72;
+    font-size: 20px !important;
+    margin-right: 8px;
+}
+
+#search-input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    font-size: 15px;
+    color: #1a1a1a;
+    outline: none;
+}
+
+#search-input::placeholder {
+    color: #a4b0be;
+}
+
+/* Clear (X) Button */
+.clear-search-btn {
+    background: none;
+    border: none;
+    color: #b2bec3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.clear-search-btn:active {
+    color: #2d3436;
+}
+
+/* --- MAIN CONTAINER --- */
+.search-main {
+    padding-top: 0px; /* Header space */
+    padding-bottom: 30px;
+    min-height: 100vh;
+}
+
+.search-summary {
+    padding: 12px 15px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #636e72;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+/* --- STATE CONTAINERS (Empty / No Results) --- */
+.search-state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.search-state-container .empty-icon {
+    font-size: 70px !important;
+    color: #dfe6e9;
+    margin-bottom: 15px;
+}
+
+.search-state-container h2 {
+    font-size: 18px;
+    color: #2b2b2b;
+    margin: 0 0 8px 0;
+}
+
+.search-state-container p {
+    font-size: 14px;
+    color: #636e72;
+    margin: 0;
+}

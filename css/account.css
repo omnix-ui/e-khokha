@@ -1,0 +1,169 @@
+/* =========================================
+   👤 ACCOUNT PAGE SPECIFIC STYLING
+========================================= */
+body {
+    background-color: #f8f9fa;
+    margin: 0;
+}
+
+/* --- MAIN CONTAINER --- */
+.account-main {
+    padding-top: 0px; /* Header space */
+    padding-bottom: 80px; /* Bottom Nav space */
+    min-height: 100vh;
+}
+
+/* --- PROFILE SECTION (LOGGED IN) --- */
+.profile-card {
+    background-color: #ffffff;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.profile-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f0f2f5;
+}
+
+.profile-info {
+    flex-grow: 1;
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2b2b2b;
+    margin: 0 0 4px 0;
+}
+
+.profile-email, .profile-mobile {
+    font-size: 13px;
+    color: #636e72;
+    margin: 0 0 2px 0;
+}
+
+.edit-profile-btn {
+    background-color: #f0f2f5;
+    color: #2b2b2b;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s ease;
+}
+
+.edit-profile-btn:active {
+    background-color: #dfe6e9;
+}
+
+/* --- GUEST SECTION (LOGGED OUT) --- */
+.guest-card {
+    background-color: #ffffff;
+    padding: 30px 20px;
+    text-align: center;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.guest-icon {
+    font-size: 50px !important;
+    color: #dfe6e9;
+    margin-bottom: 10px;
+}
+
+.guest-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2b2b2b;
+    margin: 0 0 8px 0;
+}
+
+.guest-desc {
+    font-size: 14px;
+    color: #636e72;
+    margin: 0 0 15px 0;
+}
+
+.btn-login {
+    background-color: #fd4f6a;
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    max-width: 250px;
+}
+
+/* --- ACCOUNT MENU LIST --- */
+.account-menu {
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f2f5;
+    text-decoration: none;
+    color: #2b2b2b;
+    transition: background 0.2s ease;
+}
+
+.menu-item:active {
+    background-color: #f8f9fa;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-icon {
+    color: #636e72;
+    margin-right: 15px;
+    font-size: 22px !important;
+}
+
+.menu-text {
+    flex-grow: 1;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.menu-arrow {
+    color: #b2bec3;
+    font-size: 20px !important;
+}
+
+/* --- LOGOUT BUTTON --- */
+.logout-btn-container {
+    background-color: #ffffff;
+    padding: 16px 20px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.logout-text {
+    color: #fd4f6a;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}

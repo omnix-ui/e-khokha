@@ -6,7 +6,7 @@ body {
 }
 
 .order-main {
-    padding-top: 130px; 
+    padding-top: 80px; 
     padding-bottom: 90px;
     background-color: #f8f9fa;
     min-height: 100vh;
@@ -256,6 +256,7 @@ body {
     width: 8px;
     height: 8px;
     border-radius: 50%;
+    display: inline-block;
 }
 
 .view-details-btn {
@@ -271,13 +272,33 @@ body {
     padding: 0;
 }
 
-/* --- 6️⃣ ORDER STATUS COLORS --- */
-.status-pending { background-color: #ff9f43; } 
-.status-confirmed { background-color: #54a0ff; } 
-.status-shipped { background-color: #9b59b6; } 
-.status-out { background-color: #feca57; } 
-.status-delivered { background-color: #1dd1a1; } 
-.status-cancelled { background-color: #ff6b6b; } 
+/* --- 6️⃣ ORDER STATUS COLORS (UNIFIED 6 STATUSES) --- */
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    min-width: 8px; /* 🔴 Flexbox ko dot gayab karne se rokega */
+    min-height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Dots / Background Colors */
+.status-pending { background-color: #ff9f43 !important; } 
+.status-confirmed { background-color: #54a0ff !important; } 
+.status-shipped { background-color: #9b59b6 !important; } 
+.status-out-for-delivery { background-color: #feca57 !important; } 
+.status-delivered { background-color: #1dd1a1 !important; } 
+.status-cancelled { background-color: #ff6b6b !important; }
+
+/* Text Colors */
+.text-pending { color: #ff9f43 !important; } 
+.text-confirmed { color: #54a0ff !important; } 
+.text-shipped { color: #9b59b6 !important; } 
+.text-out-for-delivery { color: #feca57 !important; } 
+.text-delivered { color: #1dd1a1 !important; } 
+.text-cancelled { color: #ff6b6b !important; }
+
 
 /* --- 7️⃣ VIEW DETAILS MODAL --- */
 .order-modal-overlay {

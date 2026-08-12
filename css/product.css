@@ -512,3 +512,56 @@ body {
     color: var(--text-dark);
     font-weight: 600;
 }
+/* =========================================
+   🛍️ PRODUCT DETAILS & SPECS STYLING
+========================================= */
+
+/* Description Text Styling */
+#product-desc {
+    font-size: 14px;
+    color: #4a4a4a;
+    line-height: 1.6;
+    margin-bottom: 20px; /* Description aur specs ke beech gap */
+    padding: 0 4px;
+}
+
+/* Specs Container (Box around the specs) */
+.specs-container {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+/* Individual Spec Row */
+.spec-row {
+    display: flex;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+}
+
+/* Aakhri row se border hatane ke liye */
+.spec-row:last-child {
+    border-bottom: none;
+}
+
+/* Zebra Striping (Ek row white, ek light grey) - Looks Premium! */
+.spec-row:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Key (Left Side - e.g., "Fabric", "Type") */
+.spec-key {
+    width: 45%;
+    font-weight: 600;
+    color: #2d2d2d;
+    padding-right: 10px;
+}
+
+/* Value (Right Side - e.g., "100% Cotton", "In-Ear") */
+.spec-value {
+    width: 55%;
+    color: #555;
+    line-height: 1.4;
+}
