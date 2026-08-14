@@ -3,9 +3,196 @@
 // ==========================================
 const eKhokhaCategories = [
     { category_id: "CAT-001", name: "Fashion", slug: "fashion", icon: "checkroom" },
-    { category_id: "CAT-002", name: "Gadgets", slug: "gadgets", icon: "smartphone" }, // Tera smartphone icon
+    { category_id: "CAT-002", name: "Gadgets", slug: "gadgets", icon: "smartphone" }, 
     { category_id: "CAT-003", name: "Beauty", slug: "beauty", icon: "face" },
     { category_id: "CAT-004", name: "Home", slug: "home", icon: "chair" }
+];
+
+// ==========================================
+// ⭐ E-KHOKHA MASTER REVIEWS DATABASE
+// ==========================================
+let eKhokhaReviews = [
+    {
+        review_id: "REV-001",
+        product_id: "PROD-001", 
+        user_id: "auth-uuid-placeholder-001", 
+        rating: 5,
+        review_text: "Amazing t-shirt! The fabric is really soft and comfortable.",
+        created_at: "2026-08-10T14:30:00Z",
+        updated_at: "2026-08-10T14:30:00Z",
+        status: "approved", 
+        is_verified_purchase: true 
+    },
+    {
+        review_id: "REV-002",
+        product_id: "PROD-001",
+        user_id: "auth-uuid-placeholder-002",
+        rating: 4,
+        review_text: "Good fit, but color is slightly darker than the image.",
+        created_at: "2026-08-11T10:15:00Z",
+        updated_at: "2026-08-11T10:15:00Z",
+        status: "approved",
+        is_verified_purchase: true
+    },
+    {
+        review_id: "REV-003",
+        product_id: "PROD-002",
+        user_id: "auth-uuid-placeholder-001",
+        rating: 5,
+        review_text: "Best earbuds at this price. Bass is crazy!",
+        created_at: "2026-08-12T09:00:00Z",
+        updated_at: "2026-08-12T09:00:00Z",
+        status: "pending", 
+        is_verified_purchase: false
+    }
+];
+
+// ==========================================
+// ⚙️ REVIEWS CORE FUNCTIONS (Supabase Ready)
+// ==========================================
+function getApprovedReviews(productId) {
+    return eKhokhaReviews.filter(r => r.product_id === productId && r.status === 'approved');
+}
+
+function calculateDynamicRating(productId) {
+    const approvedReviews = getApprovedReviews(productId);
+    
+    if (approvedReviews.length === 0) {
+        return { score: 0, rating_count: 0 };
+    }
+    
+    const sum = approvedReviews.reduce((total, review) => total + review.rating, 0);
+    const avgScore = (sum / approvedReviews.length).toFixed(1); 
+    
+    return {
+        score: parseFloat(avgScore),
+        rating_count: approvedReviews.length
+    };
+}
+
+function submitReview(productId, userId, ratingValue, reviewText) {
+    if (ratingValue < 1 || ratingValue > 5 || !Number.isInteger(ratingValue)) {
+        return { success: false, message: "Invalid rating. Must be between 1 and 5." };
+    }
+    
+    const cleanText = reviewText ? reviewText.trim() : "";
+    if (cleanText === "" || cleanText.length > 500) {
+        return { success: false, message: "Review text must be between 1 and 500 characters." };
+    }
+
+    const existingReviewIndex = eKhokhaReviews.findIndex(r => r.product_id === productId && r.user_id === userId);
+    const timestamp = new Date().toISOString();
+
+    if (existingReviewIndex > -1) {
+        eKhokhaReviews[existingReviewIndex].rating = ratingValue;
+        eKhokhaReviews[existingReviewIndex].review_text = cleanText; 
+        eKhokhaReviews[existingReviewIndex].updated_at = timestamp;
+        eKhokhaReviews[existingReviewIndex].status = "pending"; 
+        
+        return { success: true, action: "updated", message: "Review updated and sent for approval." };
+    } else {
+        const newReview = {
+            review_id: `REV-${Date.now()}`, 
+            product_id: productId,
+            user_id: userId,
+            rating: ratingValue,
+            review_text: cleanText,
+            created_at: timestamp,
+            updated_at: timestamp,
+            status: "pending", 
+            is_verified_purchase: false 
+        };
+        eKhokhaReviews.push(newReview);
+        
+        return { success: true, action: "created", message: "Review submitted for approval." };
+    }
+}
+
+// ==========================================
+// 🎟️ E-KHOKHA MASTER COUPONS DATABASE
+// ==========================================
+const eKhokhaCoupons = [
+    {
+        coupon_id: "COUPON-001",
+        code: "WELCOME100",
+        type: "fixed",
+        value: 100,
+        min_order_amount: 999,
+        max_discount_amount: null,
+        start_at: "2026-08-01T00:00:00Z",
+        expires_at: "2026-08-31T23:59:59Z", 
+        usage_limit: 1000,
+        used_count: 125,
+        per_user_limit: 1,
+        status: "active",
+        description: "Get ₹100 off on orders above ₹999."
+    },
+    {
+        coupon_id: "COUPON-002",
+        code: "SAVE10",
+        type: "percentage",
+        value: 10,
+        min_order_amount: 1499,
+        max_discount_amount: 300,
+        start_at: "2026-08-01T00:00:00Z",
+        expires_at: "2026-09-15T23:59:59Z", 
+        usage_limit: 500,
+        used_count: 80,
+        per_user_limit: 1,
+        status: "active",
+        description: "Get 10% off up to ₹300."
+    },
+    {
+        coupon_id: "COUPON-003",
+        code: "EXPIRED50",
+        type: "fixed",
+        value: 50,
+        min_order_amount: 499,
+        max_discount_amount: null,
+        start_at: "2026-07-01T00:00:00Z",
+        expires_at: "2026-07-31T23:59:59Z", 
+        usage_limit: 500,
+        used_count: 500,
+        per_user_limit: 1,
+        status: "inactive",
+        description: "Get ₹50 off on orders above ₹499."
+    }
+];
+
+// ==========================================
+// 🔔 E-KHOKHA MASTER NOTIFICATIONS DATABASE
+// ==========================================
+const eKhokhaNotifications = [
+    {
+        notification_id: "NOTIF-001",
+        user_id: "auth-uuid-placeholder-001",
+        type: "order",
+        title: "Order Confirmed",
+        message: "Your order #EK1234 has been confirmed successfully.",
+        related_order_id: "ORD-001",
+        is_read: false,
+        created_at: "2026-08-14T10:30:00Z"
+    },
+    {
+        notification_id: "NOTIF-002",
+        user_id: "auth-uuid-placeholder-001",
+        type: "delivery",
+        title: "Out for Delivery",
+        message: "Your order #EK1234 is out for delivery.",
+        related_order_id: "ORD-001",
+        is_read: false,
+        created_at: "2026-08-14T08:00:00Z"
+    },
+    {
+        notification_id: "NOTIF-003",
+        user_id: "auth-uuid-placeholder-001",
+        type: "coupon",
+        title: "Special Offer",
+        message: "Get ₹100 OFF on orders above ₹999.",
+        related_coupon_id: "COUPON-001",
+        is_read: true,
+        created_at: "2026-08-13T12:00:00Z"
+    }
 ];
 
 // ==========================================
@@ -18,7 +205,7 @@ const eKhokhaProducts = [
             name: "Men Solid Casual T-Shirt",
             description: "Premium cotton solid casual t-shirt for everyday wear.",
             category: "Fashion",
-            category_id: "CAT-001" // 🔴 NEW: Supabase Relationship
+            category_id: "CAT-001" 
         },
         pricing: { current_price: 399, original_price: 999, discount: 60 },
         rating: { score: 4.5, rating_count: 2450, review_count: 150 },
@@ -33,7 +220,7 @@ const eKhokhaProducts = [
             name: "Wireless Bluetooth Earbuds Pro",
             description: "High-quality bass, noise cancellation.",
             category: "Gadgets",
-            category_id: "CAT-002" // 🔴 NEW: Supabase Relationship
+            category_id: "CAT-002" 
         },
         pricing: { current_price: 899, original_price: 2499, discount: 64 },
         rating: { score: 4.2, rating_count: 1205, review_count: 85 },
@@ -48,7 +235,7 @@ const eKhokhaProducts = [
             name: "Men's Running Sneakers",
             description: "Lightweight and durable running shoes.",
             category: "Fashion",
-            category_id: "CAT-001" // 🔴 NEW: Supabase Relationship
+            category_id: "CAT-001" 
         },
         pricing: { current_price: 699, original_price: 1599, discount: 56 },
         rating: { score: 4.0, rating_count: 890, review_count: 45 },
@@ -59,7 +246,6 @@ const eKhokhaProducts = [
     }
 ];
 
-// Helper Function
 function getProductById(id) {
     return eKhokhaProducts.find(product => product.product_id === id);
 }
@@ -68,7 +254,6 @@ function getProductById(id) {
 // ⚙️ E-KHOKHA GLOBAL JAVASCRIPT 
 // ==========================================
 
-// Global function jo har page par chahiye
 function updateCartBadge() {
     const badge = document.getElementById('cart-badge');
     if (badge) {
@@ -79,35 +264,56 @@ function updateCartBadge() {
     }
 }
 
-// 1. Page Load hote hi sabse pehle ye chalao
+// Global Function for Notification Unread Count
+function getUnreadNotificationCount(userId) {
+    const readList = JSON.parse(localStorage.getItem('eKhokhaReadNotifications')) || [];
+    const unreadCount = eKhokhaNotifications.filter(n => 
+        n.user_id === userId && 
+        n.is_read === false && 
+        !readList.includes(n.notification_id)
+    ).length;
+    return unreadCount;
+}
+
+// Global UI Updater for Notification Badge
+function updateNotificationBadge() {
+    const notifBadge = document.getElementById('notif-badge');
+    if (notifBadge) {
+        const count = getUnreadNotificationCount("auth-uuid-placeholder-001");
+        notifBadge.innerText = count > 9 ? '9+' : count;
+        notifBadge.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+// Page Load Initialization
 document.addEventListener('DOMContentLoaded', () => {
     updateCartBadge();
-    // --- 🔴 HOME SEARCH REDIRECTION LOGIC --- //
+    updateNotificationBadge(); // 🔴 Added Notification Badge Updater
+
+    // --- HOME SEARCH REDIRECTION LOGIC --- //
     const homeSearchBox = document.querySelector('.search-container');
     const homeSearchInput = document.querySelector('.search-box input');
 
-    // Agar user Home page par hai aur search container exist karta hai
     if (homeSearchBox) {
-        homeSearchBox.style.cursor = 'pointer'; // UI update
+        homeSearchBox.style.cursor = 'pointer'; 
         homeSearchBox.addEventListener('click', () => {
             window.location.href = "pages/search.html";
         });
     }
 
-    // Double safety: Agar user specifically input ke andar tap kare
     if (homeSearchInput) {
-        homeSearchInput.style.cursor = 'pointer'; // UI update
+        homeSearchInput.style.cursor = 'pointer'; 
         homeSearchInput.addEventListener('click', (e) => {
-            e.stopPropagation(); // Event bubble na ho
+            e.stopPropagation(); 
             window.location.href = "pages/search.html";
         });
     }
-        // --- HOME PAGE CATEGORY LOGIC --- //
+
+    // --- HOME PAGE CATEGORY LOGIC --- //
     const homeCatList = document.getElementById('home-category-list');
     if (homeCatList) {
         homeCatList.innerHTML = ''; 
         
-        // "All" Button (Links to category page)
         homeCatList.innerHTML += `
             <div class="category-card active" onclick="window.location.href='pages/category.html?category=all'">
                 <div class="cat-icon"><span class="material-symbols-outlined">apps</span></div>
@@ -115,7 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Dynamic Categories loop
         eKhokhaCategories.forEach(cat => {
             homeCatList.innerHTML += `
                 <div class="category-card" onclick="window.location.href='pages/category.html?category=${cat.slug}'">
@@ -125,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
 
-        // "More" Button
         homeCatList.innerHTML += `
             <div class="category-card" onclick="window.location.href='pages/category.html'">
                 <div class="cat-icon"><span class="material-symbols-outlined">more_horiz</span></div>
@@ -134,17 +338,15 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-        // --- HOME PAGE LOGIC (Phase 3) --- //
+    // --- HOME PAGE LOGIC (Phase 3) --- //
     const homeProductGrid = document.getElementById('home-product-grid');
     if (homeProductGrid) {
-        homeProductGrid.innerHTML = ''; // Khali karo
+        homeProductGrid.innerHTML = ''; 
         
-        // Database ke har product ke liye ek card banao
         eKhokhaProducts.forEach(product => {
             const card = document.createElement('div');
             card.className = 'product-card';
             
-            // 🔴 Naya click function: Sirf ID bhej rahe hain
             card.onclick = () => openProduct(product.product_id);
 
             card.innerHTML = `
@@ -167,196 +369,9 @@ document.addEventListener('DOMContentLoaded', () => {
             homeProductGrid.appendChild(card);
         });
     }
-
-    
-    // --- PRODUCT PAGE LOGIC --- //
-    const isProductPage = document.querySelector('.product-title'); 
-    if (isProductPage) {
-        
-        // --- 1. Data Fetch ---
-        const activeProductId = localStorage.getItem('eKhokhaActiveProductId') || "PROD-001";
-        const productData = getProductById(activeProductId);
-
-        if (productData) {
-            // A) Basic Info & Pricing
-            document.querySelector('.product-title').innerText = productData.basic_info.name;
-            document.querySelector('.current-price').innerText = '₹' + productData.pricing.current_price;
-            
-            const origPrice = document.querySelector('.original-price');
-            if (origPrice && productData.pricing.original_price) {
-                origPrice.innerText = '₹' + productData.pricing.original_price;
-            }
-
-            const descEl = document.querySelector('.product-description');
-            if(descEl) descEl.innerText = productData.basic_info.description;
-
-            // B) Dynamic Variants (Sizes/Colors)
-            const sizeList = document.querySelector('.size-list');
-            if (sizeList && productData.variants) {
-                sizeList.innerHTML = ''; 
-                
-                productData.variants.forEach((variant, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = `size-btn ${index === 0 ? 'active' : ''}`; 
-                    btn.innerText = variant;
-                    sizeList.appendChild(btn);
-                });
-
-                const sizeBtns = document.querySelectorAll('.size-list .size-btn');
-                sizeBtns.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        sizeBtns.forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                    });
-                });
-            }
-
-            // C) Dynamic Specifications (Professional Grid Format)
-            const specsContainer = document.querySelector('.specs-list'); 
-            if (specsContainer && productData.specs) {
-                specsContainer.innerHTML = ''; // Purana kachra saaf
-                
-                // 1. Ek main box (wrapper) banayenge border aur design ke liye
-                const mainGrid = document.createElement('div');
-                mainGrid.className = 'specs-container'; 
-                
-                // 2. Loop lagakar Myntra-style rows banayenge
-                for (const [key, value] of Object.entries(productData.specs)) {
-                    const specRow = document.createElement('div');
-                    specRow.className = 'spec-row'; // Nayi CSS class
-                    
-                    // Left mein heading, Right mein uski value
-                    specRow.innerHTML = `
-                        <span class="spec-key">${key}</span>
-                        <span class="spec-value">${value}</span>
-                    `;
-                    
-                    mainGrid.appendChild(specRow);
-                }
-                
-                // 3. Final grid ko screen par daal do
-                specsContainer.appendChild(mainGrid);
-            }
-
-            // D) Stock Management
-            const stockStatusEl = document.querySelector('.stock-status');
-            const addToCartBtn = document.getElementById('add-to-cart-btn');
-            const buyNowBtn = document.querySelector('.btn-buy-now');
-
-            if (productData.stock.status === 'out_of_stock') {
-                if (stockStatusEl) {
-                    stockStatusEl.innerText = "Out of Stock";
-                    stockStatusEl.style.color = 'red';
-                }
-                if (addToCartBtn) addToCartBtn.disabled = true;
-                if (buyNowBtn) buyNowBtn.disabled = true;
-            } else {
-                if (stockStatusEl) {
-                    stockStatusEl.innerText = "In Stock";
-                    stockStatusEl.style.color = 'green';
-                }
-            }
-        }
-            // --- E) Dynamic Image Gallery (Phase 2 Upgrade) ---
-            const mainImageEl = document.getElementById('main-product-image');
-            const thumbnailListEl = document.getElementById('thumbnail-list');
-
-            if (mainImageEl && thumbnailListEl && productData.images && productData.images.length > 0) {
-                // 1. By default, sabse pehli image (images[0]) ko Main Image banao
-                mainImageEl.src = productData.images[0];
-                
-                // Purana kachra saaf karo
-                thumbnailListEl.innerHTML = '';
-
-                // 2. Loop lagakar saari images ke thumbnails banao
-                productData.images.forEach((imgUrl, index) => {
-                    const thumbImg = document.createElement('img');
-                    thumbImg.src = imgUrl;
-                    // Pehle thumbnail ko 'active' class do
-                    thumbImg.className = `thumb-placeholder ${index === 0 ? 'active' : ''}`; 
-                    // Thodi si inline styling taaki HTML ki CSS ke sath set baith jaye
-                    thumbImg.style.width = '60px';
-                    thumbImg.style.height = '60px';
-                    thumbImg.style.objectFit = 'cover';
-                    thumbImg.style.borderRadius = '8px';
-                    thumbImg.style.cursor = 'pointer';
-
-                    // 3. Click Event: Jab koi thumbnail par click kare toh wo Main Image ban jaye
-                    thumbImg.addEventListener('click', () => {
-                        mainImageEl.src = imgUrl; // Main image update
-                        
-                        // Active class ko naye thumbnail par shift karo
-                        document.querySelectorAll('#thumbnail-list .thumb-placeholder').forEach(el => el.classList.remove('active'));
-                        thumbImg.classList.add('active');
-                    });
-
-                    thumbnailListEl.appendChild(thumbImg);
-                });
-            }
-
-        // --- 2. Quantity Logic ---
-        const qtyMinusBtn = document.querySelector('.qty-controls .qty-btn:first-child');
-        const qtyPlusBtn = document.querySelector('.qty-controls .qty-btn:last-child');
-        const qtyNumber = document.querySelector('.qty-controls .qty-number');
-
-        if (qtyMinusBtn && qtyPlusBtn && qtyNumber) {
-            qtyMinusBtn.addEventListener('click', () => {
-                let qty = parseInt(qtyNumber.innerText);
-                if (qty > 1) qtyNumber.innerText = qty - 1;
-            });
-            qtyPlusBtn.addEventListener('click', () => {
-                let qty = parseInt(qtyNumber.innerText);
-                if (qty < 10) qtyNumber.innerText = qty + 1;
-            });
-        }
-
-        // --- 3. ADD TO CART LOGIC (Strict Architecture) --- //
-        const addToCartBtn = document.getElementById('add-to-cart-btn');
-        if (addToCartBtn) {
-            addToCartBtn.addEventListener('click', () => {
-                if(addToCartBtn.disabled) return; 
-                
-                const size = document.querySelector('.size-btn.active')?.innerText || 'Free Size';
-                const quantity = parseInt(document.querySelector('.qty-number').innerText);
-                const productId = localStorage.getItem('eKhokhaActiveProductId') || "PROD-001";
-
-                let cart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
-                
-                const existingIndex = cart.findIndex(item => item.product_id === productId && item.size === size);
-                if (existingIndex > -1) {
-                    cart[existingIndex].quantity += quantity;
-                } else {
-                    cart.push({ product_id: productId, size: size, quantity: quantity });
-                }
-                localStorage.setItem('eKhokhaCart', JSON.stringify(cart));
-                updateCartBadge();
-                alert("Added to Cart!"); 
-            });
-        }
-
-        // --- 4. BUY NOW LOGIC (Strict Architecture) --- //
-        const buyNowBtn = document.querySelector('.btn-buy-now');
-        if (buyNowBtn) {
-            buyNowBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                if(buyNowBtn.disabled) return; 
-                
-                const size = document.querySelector('.size-btn.active')?.innerText || 'Free Size';
-                const quantity = parseInt(document.querySelector('.qty-number').innerText);
-                const productId = localStorage.getItem('eKhokhaActiveProductId') || "PROD-001";
-
-                const buyNowItem = [{ product_id: productId, size: size, quantity: quantity }];
-                
-                localStorage.setItem('eKhokhaCheckoutData', JSON.stringify(buyNowItem));
-                localStorage.setItem('eKhokhaCheckoutMode', 'route_product');
-                window.location.href = "checkout.html";
-            });
-        }
-    }
 });
 
 // --- HOME PAGE REDIRECTION --- //
-// 🔴 UPGRADE: Ab sirf ID pass hogi, kachra nahi!
 window.openProduct = function(productId) {
     localStorage.setItem('eKhokhaActiveProductId', productId);
     window.location.href = "pages/product.html";

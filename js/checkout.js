@@ -61,10 +61,52 @@ function renderCheckoutSummary() {
         checkoutItemsList.appendChild(itemDiv);
     });
 
+    // 🟢 COUPON LOGIC INTEGRATION 🟢
+    let finalPayableAmount = totalAmount;
+    let discountAmount = 0;
+
+    if (checkoutMode === 'route_cart') {
+        const appliedCoupon = JSON.parse(localStorage.getItem('eKhokhaAppliedCoupon'));
+        if (appliedCoupon && typeof eKhokhaCoupons !== 'undefined') {
+            const masterCoupon = eKhokhaCoupons.find(c => c.code === appliedCoupon.code);
+            
+            // Check if minimum order is still valid
+            if (masterCoupon && totalAmount >= masterCoupon.min_order_amount) {
+                if (masterCoupon.type === 'fixed') {
+                    discountAmount = masterCoupon.value;
+                } else if (masterCoupon.type === 'percentage') {
+                    discountAmount = (totalAmount * masterCoupon.value) / 100;
+                    if (masterCoupon.max_discount_amount && discountAmount > masterCoupon.max_discount_amount) {
+                        discountAmount = masterCoupon.max_discount_amount;
+                    }
+                }
+                
+                if (discountAmount > totalAmount) discountAmount = totalAmount; // Safety
+                finalPayableAmount -= discountAmount;
+
+                // Dynamically UI mein Coupon Row Inject karo
+                if (!document.getElementById('checkout-dynamic-coupon-row')) {
+                    const itemTotalRow = document.getElementById('checkout-item-total').parentElement;
+                    const couponRow = document.createElement('div');
+                    couponRow.id = 'checkout-dynamic-coupon-row';
+                    couponRow.className = 'bill-row';
+                    couponRow.style.color = '#388e3c'; // Green text
+                    couponRow.innerHTML = `
+                        <span style="color: inherit;">Coupon (${masterCoupon.code})</span>
+                        <span style="font-weight: 600;">-₹${Math.round(discountAmount)}</span>
+                    `;
+                    itemTotalRow.insertAdjacentElement('afterend', couponRow);
+                }
+            } else {
+                localStorage.removeItem('eKhokhaAppliedCoupon'); // Remove if cart value drops
+            }
+        }
+    }
+
     // Bill Details update karna
     document.getElementById('checkout-item-total').innerText = '₹' + totalAmount;
-    document.getElementById('checkout-grand-total').innerText = '₹' + totalAmount;
-    document.getElementById('footer-pay-amount').innerText = '₹' + totalAmount;
+    document.getElementById('checkout-grand-total').innerText = '₹' + Math.round(finalPayableAmount);
+    document.getElementById('footer-pay-amount').innerText = '₹' + Math.round(finalPayableAmount);
 }
 
 // --- PLACE ORDER LOGIC --- //
@@ -76,15 +118,14 @@ if (placeOrderBtn) {
     placeOrderBtn.addEventListener('click', () => {
         
         // --- 🔴 START: LOCK THE BUTTON ---
-        if (isSubmitting) return; // Agar pehle se click ho chuka hai, toh ignore karo
-        isSubmitting = true; // Flag on
+        if (isSubmitting) return; 
+        isSubmitting = true; 
         
-        const originalText = placeOrderBtn.innerHTML; // Purana text yaad rakho
-        placeOrderBtn.innerHTML = "Placing Order..."; // Visual loading state
+        const originalText = placeOrderBtn.innerHTML; 
+        placeOrderBtn.innerHTML = "Placing Order..."; 
         placeOrderBtn.style.opacity = "0.7";
         placeOrderBtn.style.pointerEvents = "none";
         
-        // Helper function (agar validation fail ho, toh unlock karne ke liye)
         const unlockButton = () => {
             isSubmitting = false;
             placeOrderBtn.innerHTML = originalText;
@@ -109,10 +150,11 @@ if (placeOrderBtn) {
         } else if (checkoutMode === 'route_cart') {
             checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
         }
-                // --- 🔴 PATCH 1: STRICT VALIDATION ENGINE ---
+        
+        // --- 🔴 PATCH 1: STRICT VALIDATION ENGINE ---
         if (!checkoutItems || checkoutItems.length === 0) {
             alert("Security Alert: Your checkout list is empty! Order cannot be placed.");unlockButton();
-            return; // Yahin rok do
+            return; 
         }
 
         let isDataValid = true;
@@ -134,10 +176,9 @@ if (placeOrderBtn) {
 
         if (!isDataValid) {
             alert(validationError + "\nPlease check your order and try again.");unlockButton();
-            return; // Order fail, temporary data safe rahega
+            return; 
         }
         // -------------------------------------------
-
 
         // Total calculation from Live DB Price
         let totalAmount = 0;
@@ -147,8 +188,34 @@ if (placeOrderBtn) {
                 totalAmount += (productData.pricing.current_price * item.quantity);
             }
         });
-                // --- 🔴 PATCH 5: TOTAL AMOUNT VALIDATION ---
-        if (totalAmount <= 0 || isNaN(totalAmount)) {
+
+        // 🟢 FINAL COUPON CALCULATION BEFORE SAVING ORDER 🟢
+        let finalPayableAmount = totalAmount;
+        let finalDiscount = 0;
+        let usedCouponCode = null;
+
+        if (checkoutMode === 'route_cart') {
+            const appliedCoupon = JSON.parse(localStorage.getItem('eKhokhaAppliedCoupon'));
+            if (appliedCoupon && typeof eKhokhaCoupons !== 'undefined') {
+                const masterCoupon = eKhokhaCoupons.find(c => c.code === appliedCoupon.code);
+                if (masterCoupon && totalAmount >= masterCoupon.min_order_amount) {
+                    if (masterCoupon.type === 'fixed') {
+                        finalDiscount = masterCoupon.value;
+                    } else if (masterCoupon.type === 'percentage') {
+                        finalDiscount = (totalAmount * masterCoupon.value) / 100;
+                        if (masterCoupon.max_discount_amount && finalDiscount > masterCoupon.max_discount_amount) {
+                            finalDiscount = masterCoupon.max_discount_amount;
+                        }
+                    }
+                    if (finalDiscount > totalAmount) finalDiscount = totalAmount;
+                    finalPayableAmount -= finalDiscount;
+                    usedCouponCode = masterCoupon.code;
+                }
+            }
+        }
+
+        // --- 🔴 PATCH 5: TOTAL AMOUNT VALIDATION ---
+        if (finalPayableAmount <= 0 || isNaN(finalPayableAmount)) {
             alert("Security Alert: Invalid total amount calculation.");
             unlockButton();
             return; 
@@ -181,8 +248,11 @@ if (placeOrderBtn) {
                 };
             }),
             
-            // 🔥 YAHAN THI GADBAD! Ye line ab properly add ho gayi hai.
-            total: totalAmount,
+            // 🟢 COUPON DETAILS ADDED TO ORDER SNAPSHOT 🟢
+            item_total: totalAmount,
+            discount_amount: Math.round(finalDiscount),
+            coupon_applied: usedCouponCode,
+            total: Math.round(finalPayableAmount),
 
             address: {
                 name: document.getElementById('fullName').value,
@@ -209,7 +279,7 @@ if (placeOrderBtn) {
         const isDuplicate = userOrders.some(order => order.orderId === latestOrder.orderId);
         
         if (!isDuplicate) {
-            userOrders.push(latestOrder); // Sirf tabhi save karo jab duplicate na ho
+            userOrders.push(latestOrder); 
             localStorage.setItem('eKhokhaUserOrders', JSON.stringify(userOrders));
         } else {
             console.warn("Duplicate order detected and blocked from History.");
@@ -218,12 +288,15 @@ if (placeOrderBtn) {
         // 3. Cart aur Temporary data ko clean karna
         if (checkoutMode === 'route_cart') {
             localStorage.setItem('eKhokhaCart', JSON.stringify([]));
+            localStorage.removeItem('eKhokhaAppliedCoupon'); // 🟢 Coupon clean kiya taaki naye order mein na aaye
         }
         
         localStorage.removeItem('eKhokhaCheckoutData');
         localStorage.removeItem('eKhokhaCheckoutMode');
 
-        // 4. Order Success Page par bhejna
-        window.location.href = "success.html"; 
+        // 4. Fake Delay & Order Success Page par bhejna
+        setTimeout(() => {
+            window.location.href = "success.html"; 
+        }, 1000); // 1 second ka premium loading effect
     });
 }

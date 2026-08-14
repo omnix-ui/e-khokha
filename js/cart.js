@@ -14,34 +14,29 @@ function renderCart() {
 
     // 1. Agar cart khali hai
     if (cart.length === 0) {
-        emptyCartState.style.display = 'flex';
-        cartContainer.style.display = 'none';
+        if(emptyCartState) emptyCartState.style.display = 'flex';
+        if(cartContainer) cartContainer.style.display = 'none';
         return;
     }
 
     // 2. Agar cart mein items hain
-    emptyCartState.style.display = 'none';
-    cartContainer.style.display = 'block';
+    if(emptyCartState) emptyCartState.style.display = 'none';
+    if(cartContainer) cartContainer.style.display = 'block';
     
-    cartItemsList.innerHTML = ''; 
+    if(cartItemsList) cartItemsList.innerHTML = ''; 
     let totalAmount = 0;
 
     // 3. Har item ke liye ek card banao
     cart.forEach((item) => {
+        // app.js se live data uthao
+        const productData = getProductById(item.product_id); 
         
-        // 🔴 PHASE 4 UPGRADE: Database Join Logic
-        // Cart array mein ab sirf {product_id, size, quantity} hai. Baaki DB se aayega!
-        const productData = getProductById(item.product_id); // app.js se function call kiya
-        
-        // Agar by chance DB mein product nahi mila (corrupted data), toh skip kar do
-        if (!productData) return; 
+        if (!productData) return; // Corrupted data skip karo
 
-        // Master DB se live data uthao
         const currentName = productData.basic_info.name;
         const currentPrice = productData.pricing.current_price;
         const currentImage = productData.images[0] || 'IMG';
 
-        // Total live price se calculate hoga
         let itemTotal = currentPrice * item.quantity;
         totalAmount += itemTotal;
 
@@ -71,31 +66,96 @@ function renderCart() {
                 </div>
             </div>
         `;
-        cartItemsList.appendChild(itemDiv);
+        if(cartItemsList) cartItemsList.appendChild(itemDiv);
     });
 
-    // 4. Bill Details Update karo
-    document.getElementById('item-total').innerText = '₹' + totalAmount;
-    document.getElementById('grand-total').innerText = '₹' + totalAmount;
-    document.getElementById('footer-total').innerText = '₹' + totalAmount;
+    // 4. Bill & Coupon Logic Update
+    let finalTotal = totalAmount;
+    let appliedCoupon = JSON.parse(localStorage.getItem('eKhokhaAppliedCoupon'));
+
+    const couponRow = document.getElementById('coupon-discount-row');
+    const couponDiscountText = document.getElementById('cart-coupon-discount');
+    const couponStatusText = document.getElementById('coupon-status-text');
+    const couponActionBtn = document.getElementById('coupon-action-btn');
+
+    function resetCouponUI() {
+        if(couponRow) couponRow.style.display = 'none';
+        if(couponStatusText) {
+            couponStatusText.innerText = 'Apply Coupon';
+            couponStatusText.style.color = '#1a1a1a';
+        }
+        if(couponActionBtn) {
+            couponActionBtn.innerText = 'Apply';
+            couponActionBtn.style.color = '#fd4f6a';
+            couponActionBtn.href = 'coupon.html';
+            couponActionBtn.onclick = null;
+        }
+    }
+
+    if (appliedCoupon && typeof eKhokhaCoupons !== 'undefined') {
+        const masterCoupon = eKhokhaCoupons.find(c => c.code === appliedCoupon.code);
+        
+        if (masterCoupon && totalAmount >= masterCoupon.min_order_amount) {
+            let currentDiscount = 0;
+            if (masterCoupon.type === 'fixed') {
+                currentDiscount = masterCoupon.value;
+            } else if (masterCoupon.type === 'percentage') {
+                currentDiscount = (totalAmount * masterCoupon.value) / 100;
+                if (masterCoupon.max_discount_amount && currentDiscount > masterCoupon.max_discount_amount) {
+                    currentDiscount = masterCoupon.max_discount_amount;
+                }
+            }
+            
+            if (currentDiscount > totalAmount) currentDiscount = totalAmount;
+            finalTotal -= currentDiscount;
+            
+            if(couponRow) couponRow.style.display = 'flex';
+            if(couponDiscountText) couponDiscountText.innerText = `-₹${Math.round(currentDiscount)}`;
+            
+            if(couponStatusText) {
+                couponStatusText.innerText = `'${masterCoupon.code}' Applied`;
+                couponStatusText.style.color = '#388e3c';
+            }
+            if(couponActionBtn) {
+                couponActionBtn.innerText = 'Remove';
+                couponActionBtn.style.color = '#636e72';
+                couponActionBtn.href = '#';
+                couponActionBtn.onclick = (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('eKhokhaAppliedCoupon');
+                    renderCart(); 
+                };
+            }
+        } else {
+            localStorage.removeItem('eKhokhaAppliedCoupon');
+            resetCouponUI();
+        }
+    } else {
+        resetCouponUI();
+    }
+
+    // Bill Details Update karo
+    const itemTotalEl = document.getElementById('item-total');
+    const grandTotalEl = document.getElementById('grand-total');
+    const footerTotalEl = document.getElementById('footer-total');
+
+    if(itemTotalEl) itemTotalEl.innerText = '₹' + totalAmount;
+    if(grandTotalEl) grandTotalEl.innerText = '₹' + Math.round(finalTotal);
+    if(footerTotalEl) footerTotalEl.innerText = '₹' + Math.round(finalTotal);
 }
 
 // --- BUTTONS LOGIC (+ / - / DELETE) --- //
 
 window.removeItem = function(productId, size) {
     let cart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
-    
-    // Smart Delete
     cart = cart.filter(item => !(item.product_id === productId && item.size === size));
-    
     localStorage.setItem('eKhokhaCart', JSON.stringify(cart)); 
-    updateCartBadge(); 
+    if(typeof updateCartBadge === 'function') updateCartBadge(); 
     renderCart(); 
 };
 
 window.updateQty = function(productId, size, change) {
     let cart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
-    
     const index = cart.findIndex(item => item.product_id === productId && item.size === size);
     
     if (index > -1) {
@@ -103,10 +163,9 @@ window.updateQty = function(productId, size, change) {
             removeItem(productId, size);
             return;
         }
-        
         cart[index].quantity += change;
         localStorage.setItem('eKhokhaCart', JSON.stringify(cart));
-        updateCartBadge();
+        if(typeof updateCartBadge === 'function') updateCartBadge();
         renderCart();
     }
 };
@@ -117,14 +176,11 @@ const proceedBtn = document.getElementById('proceed-btn');
 if (proceedBtn) {
     proceedBtn.addEventListener('click', (e) => {
         e.preventDefault(); 
-        
         let currentCart = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
-        
         if (currentCart.length === 0) {
             alert("Cart khali hai, pehle kuch add kijiye!");
             return;
         }
-
         localStorage.setItem('eKhokhaCheckoutMode', 'route_cart');
         window.location.href = "checkout.html"; 
     });

@@ -47,6 +47,15 @@
             <!-- JS yahan dynamically products insert karega -->
             <div id="cart-items-list"></div>
 
+            <!-- ⭐ COUPON SECTION (NEW) -->
+            <div style="background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-symbols-outlined" style="color: #fd4f6a;">local_offer</span>
+                    <span id="coupon-status-text" style="font-weight: 600; font-size: 14px; color: #1a1a1a;">Apply Coupon</span>
+                </div>
+                <a href="coupon.html" id="coupon-action-btn" style="color: #fd4f6a; font-size: 14px; font-weight: 700; text-decoration: none;">Apply</a>
+            </div>
+
             <!-- 4️⃣ ORDER SUMMARY (Bill Details) -->
             <div class="order-summary">
                 <h3 class="summary-title">Bill Details</h3>
@@ -54,6 +63,13 @@
                     <span class="summary-label">Item Total</span>
                     <span class="summary-value" id="item-total">₹0</span>
                 </div>
+
+                <!-- ⭐ DYNAMIC COUPON DISCOUNT ROW (NEW) -->
+                <div class="summary-row" id="coupon-discount-row" style="display: none; color: #388e3c;">
+                    <span class="summary-label" style="color: inherit;">Coupon Discount</span>
+                    <span class="summary-value" id="cart-coupon-discount" style="font-weight: 600;">-₹0</span>
+                </div>
+
                 <div class="summary-row">
                     <span class="summary-label">Delivery Fee</span>
                     <span class="summary-value success-text">FREE</span>
@@ -77,11 +93,9 @@
         </div>
     </main>
 
-        <!-- Global JS File -->
+    <!-- Global JS File -->
     <script src="../js/app.js"></script>
     <!-- Cart Page Specific JS -->
     <script src="../js/cart.js"></script>
-</body>
-
 </body>
 </html>
