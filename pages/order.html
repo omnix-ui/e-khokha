@@ -1,123 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Order - E-KHOKHA</title>
-    
-    <!-- Google Material Icons -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
-    
-    <!-- CSS Links (Added ?v=2 for cache bypass) -->
-    <link rel="stylesheet" href="../css/style.css?v=2">
-    <link rel="stylesheet" href="../css/order.css?v=2">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>My Order - E-KHOKHA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0">
+<link rel="stylesheet" href="../css/style.css?v=2">
+<link rel="stylesheet" href="../css/order.css?v=2">
 </head>
 <body>
+<header class="top-header">
+<a href="#" onclick="handleBackButton(event)" class="header-icon"><span class="material-symbols-outlined">arrow_back</span></a>
+<div class="header-title">My Order</div>
+<a href="#" class="header-icon"></a>
+</header>
 
-    <!-- 1️⃣ ORDES PAGE HEADER -->
-    <header class="top-header">
-        <a href="#" onclick="handleBackButton(event)" class="header-icon">
-            <span class="material-symbols-outlined">arrow_back</span>
-        </a>
-        <div class="header-title">My Order</div>
-        <a href="#" class="header-icon">
-        </a>
-    </header>
+<div class="order-filters-container">
+<ul class="order-filters">
+<li class="filter-tab active" data-status="All">All</li>
+<li class="filter-tab" data-status="Pending">Pending</li>
+<li class="filter-tab" data-status="Confirmed">Confirmed</li>
+<li class="filter-tab" data-status="Shipped">Shipped</li>
+<li class="filter-tab" data-status="Out for Delivery">Out for Delivery</li>
+<li class="filter-tab" data-status="Delivered">Delivered</li>
+<li class="filter-tab" data-status="Cancelled">Cancelled</li>
+</ul>
+</div>
 
-    <!-- 🔴 FIXED TABS WRAPPER -->
-    <div class="order-filters-container">
-        <ul class="order-filters">
-            <li class="filter-tab active" data-status="All">All</li>
-            <li class="filter-tab" data-status="Pending">Pending</li>
-            <li class="filter-tab" data-status="Confirmed">Confirmed</li>
-            <li class="filter-tab" data-status="Shipped">Shipped</li>
-            <li class="filter-tab" data-status="Out for Delivery">Out for Delivery</li>
-            <li class="filter-tab" data-status="Delivered">Delivered</li>
-            <li class="filter-tab" data-status="Cancelled">Cancelled</li>
-        </ul>
-    </div>
+<main class="order-main">
+<div id="order-loading" class="state-container">
+<span class="material-symbols-outlined empty-icon">progress_activity</span>
+<h2>Loading Orders...</h2>
+<p>Please wait.</p>
+</div>
 
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="order-main">
+<div id="empty-state" class="state-container" style="display:none;">
+<span class="material-symbols-outlined empty-icon">inventory_2</span>
+<h2>No Order Yet</h2>
+<p>You haven't placed any order yet.</p>
+<a href="../index.html" class="btn-start-shopping">Start Shopping</a>
+</div>
 
-        <!-- 8️⃣ EMPTY STATE (Hidden by default, JS se show hoga) -->
-        <div id="empty-state" class="state-container" style="display: none;">
-            <span class="material-symbols-outlined empty-icon">inventory_2</span>
-            <h2>No Order Yet</h2>
-            <p>You haven't placed any order yet.</p>
-            <a href="../index.html" class="btn-start-shopping">Start Shopping</a>
-        </div>
-        
-        <!-- Yahan JS se saare order cards generate honge -->
-        <div id="order-list-container">
-            <!-- Cards aayenge yahan -->
-        </div> <!-- 🔴 YE DIV MISSING THA! Iske bina layout toot raha tha -->
-        
-    </main>
+<div id="order-list-container"></div>
+</main>
 
-    <!-- 7️⃣ ORDER DETAILS MODAL (Hidden by default) -->
-    <div class="order-modal-overlay" id="order-modal">
-        <div class="order-modal-content">
-            
-            <div class="modal-header">
-                <div class="modal-title">Order Details</div>
-                <button class="close-modal-btn" onclick="closeOrderModal()">&times;</button>
-            </div>
-            
-            <div class="modal-section">
-                <div class="modal-detail-row"><span>Order ID:</span> <span id="modal-order-id" style="font-weight: bold;"></span></div>
-                <div class="modal-detail-row"><span>Order Date:</span> <span id="modal-order-date"></span></div>
-                <div class="modal-detail-row"><span>Status:</span> <span id="modal-order-status" style="font-weight: bold;"></span></div>
-                <div class="modal-detail-row"><span>Estimated Delivery:</span> <span id="modal-est-delivery"></span></div>
-            </div>
+<div class="order-modal-overlay" id="order-modal">
+<div class="order-modal-content">
+<div class="modal-header">
+<div class="modal-title">Order Details</div>
+<button class="close-modal-btn" onclick="closeOrderModal()">&times;</button>
+</div>
 
-            <div class="modal-section">
-                <div class="modal-section-title">All Items</div>
-                <!-- JS yahan saare products inject karega -->
-                <div id="modal-products-list"></div>
-            </div>
+<div class="modal-section">
+<div class="modal-detail-row"><span>Order ID:</span><span id="modal-order-id" style="font-weight:bold;"></span></div>
+<div class="modal-detail-row"><span>Order Date:</span><span id="modal-order-date"></span></div>
+<div class="modal-detail-row"><span>Status:</span><span id="modal-order-status" style="font-weight:bold;"></span></div>
+<div class="modal-detail-row"><span>Estimated Delivery:</span><span id="modal-est-delivery"></span></div>
+</div>
 
-            <div class="modal-section">
-                <div class="modal-section-title">Payment Summary</div>
-                <div class="modal-detail-row"><span>Payment Method:</span> <span id="modal-payment-method"></span></div>
-                <div class="modal-detail-row"><span style="font-weight: bold;">Total Amount:</span> <span id="modal-total-amount" style="font-weight: bold; color: #fd4f6a; font-size: 16px;"></span></div>
-            </div>
+<div class="modal-section">
+<div class="modal-section-title">All Items</div>
+<div id="modal-products-list"></div>
+</div>
 
-            <div class="modal-section">
-                <div class="modal-section-title">Delivery Address</div>
-                <div class="modal-address-text" id="modal-address"></div>
-            </div>
-            
-        </div> <!-- Closes modal-content -->
-    </div> <!-- Closes modal-overlay -->
+<div class="modal-section">
+<div class="modal-section-title">Payment Summary</div>
+<div class="modal-detail-row"><span>Payment Method:</span><span id="modal-payment-method"></span></div>
+<div class="modal-detail-row"><span style="font-weight:bold;">Total Amount:</span><span id="modal-total-amount" style="font-weight:bold;color:#fd4f6a;font-size:16px;"></span></div>
+</div>
 
-<!-- 1️⃣1️⃣ BOTTOM NAVIGATION -->
+<div class="modal-section">
+<div class="modal-section-title">Delivery Address</div>
+<div class="modal-address-text" id="modal-address"></div>
+</div>
+</div>
+</div>
+
 <nav class="bottom-nav">
-    <a href="../index.html" class="nav-item">
-        <span class="material-symbols-outlined">home</span>
-        <span>Home</span>
-    </a>
-    <a href="category.html" class="nav-item">
-        <span class="material-symbols-outlined">category</span>
-        <span>Categories</span>
-    </a>
-    <a href="cart.html" class="nav-item">
-        <span class="material-symbols-outlined">shopping_cart</span>
-        <span>Cart</span>
-    </a>
-    <!-- ORDER TAB ACTIVE/HIGHLIGHTED HAI -->
-    <a href="order.html" class="nav-item active">
-        <span class="material-symbols-outlined">list_alt</span>
-        <span>Order</span>
-    </a>
-    <a href="account.html" class="nav-item">
-        <span class="material-symbols-outlined">person</span>
-        <span>Account</span>
-    </a>
+<a href="../index.html" class="nav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
+<a href="category.html" class="nav-item"><span class="material-symbols-outlined">category</span><span>Categories</span></a>
+<a href="cart.html" class="nav-item"><span class="material-symbols-outlined">shopping_cart</span><span>Cart</span></a>
+<a href="order.html" class="nav-item active"><span class="material-symbols-outlined">list_alt</span><span>Order</span></a>
+<a href="account.html" class="nav-item"><span class="material-symbols-outlined">person</span><span>Account</span></a>
 </nav>
 
-    <!-- Scripts Link -->
-    <script src="../js/app.js"></script>
-    <script src="../js/order.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/order.js"></script>
 </body>
 </html>

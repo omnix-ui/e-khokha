@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Create Account - E-KHOKHA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<main class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-brand">
+            <h1>E-KHOKHA</h1>
+            <p>Create your account</p>
+        </div>
+
+        <form id="signup-form">
+
+            <div class="auth-field">
+                <label for="signup-name">Full Name</label>
+                <input
+                    type="text"
+                    id="signup-name"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    minlength="2"
+                    required
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="signup-email">Email</label>
+                <input
+                    type="email"
+                    id="signup-email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="signup-password">Password</label>
+
+                <div class="password-wrap">
+                    <input
+                        type="password"
+                        id="signup-password"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <button type="button" id="toggle-signup-password" class="password-toggle" aria-label="Show password">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                </div>
+
+                <div class="password-hint">
+                    Use at least 8 characters.
+                </div>
+            </div>
+
+            <div class="auth-field">
+                <label for="signup-confirm-password">Confirm Password</label>
+
+                <div class="password-wrap">
+                    <input
+                        type="password"
+                        id="signup-confirm-password"
+                        placeholder="Re-enter your password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <button type="button" id="toggle-confirm-password" class="password-toggle" aria-label="Show password">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                </div>
+            </div>
+
+            <p id="signup-error" class="auth-message error" hidden></p>
+            <p id="signup-success" class="auth-message success" hidden></p>
+
+            <button type="submit" id="signup-submit" class="auth-submit">
+                Create Account
+            </button>
+
+        </form>
+
+        <div class="auth-divider">
+            <span>OR</span>
+        </div>
+
+        <p class="auth-switch">
+            Already have an account?
+            <a href="login.html" id="go-login">Login</a>
+        </p>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+
+</body>
+</html>

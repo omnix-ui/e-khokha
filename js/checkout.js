@@ -1,302 +1,269 @@
-// --- CHECKOUT PAGE LOGIC --- //
+let currentUser=null,isSubmitting=false;
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderCheckoutSummary();
+document.addEventListener("DOMContentLoaded",async()=>{
+if(typeof window.eKhokhaDataReady==="undefined"){console.error("E-KHOKHA Error: Catalog loader not found!");return}
+try{
+await window.eKhokhaDataReady;
+const {data,error}=await supabaseClient.auth.getSession();
+if(error)throw error;
+if(!data?.session?.user){window.location.href="login.html";return}
+currentUser=data.session.user;
+await loadDefaultAddress();
+await renderCheckoutSummary();
+}catch(error){
+console.error("Checkout init error:",error);
+alert("Unable to load checkout. Please try again.");
+}
 });
 
-function renderCheckoutSummary() {
-    const checkoutItemsList = document.getElementById('checkout-items-list');
-    let checkoutItems = [];
-    
-    // Check karo ki user Cart se aaya hai ya Product Page se
-    const checkoutMode = localStorage.getItem('eKhokhaCheckoutMode');
-
-    if (checkoutMode === 'route_product') {
-        checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCheckoutData')) || [];
-    } 
-    else if (checkoutMode === 'route_cart') {
-        checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
-    }
-
-    // Agar empty hai toh Home par bhej do
-    if (checkoutItems.length === 0) {
-        alert("No items to checkout! Redirecting to Home...");
-        window.location.href = "../index.html";
-        return;
-    }
-
-    checkoutItemsList.innerHTML = '';
-    let totalAmount = 0;
-
-    // Items ko live Master Database se Join karke Checkout par dikhana
-    checkoutItems.forEach(item => {
-        const productData = getProductById(item.product_id); // DB Call
-        if (!productData) return; // Agar data missing hai toh ignore karo
-
-        const currentName = productData.basic_info.name;
-        const currentPrice = productData.pricing.current_price;
-        const currentImage = productData.images[0] || 'https://placehold.co/100x100/1a1a1a/ffffff?text=No+Image';
-
-        // UI ko Live DB se dikhana (Cart price par trust nahi)
-        let unit_price = currentPrice;
-        let itemTotal = unit_price * item.quantity;
-        totalAmount += itemTotal;
-
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'checkout-item';
-        
-        itemDiv.innerHTML = `
-            <div class="mini-image">
-                <img src="${currentImage}" alt="${currentName}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
-            </div>
-
-            <div class="mini-details">
-                <div class="mini-title">${currentName}</div>
-                <div class="mini-qty-price">
-                    <span>Qty: ${item.quantity} | Size: ${item.size}</span>
-                    <span class="mini-price">₹${itemTotal}</span>
-                </div>
-            </div>
-        `;
-        checkoutItemsList.appendChild(itemDiv);
-    });
-
-    // 🟢 COUPON LOGIC INTEGRATION 🟢
-    let finalPayableAmount = totalAmount;
-    let discountAmount = 0;
-
-    if (checkoutMode === 'route_cart') {
-        const appliedCoupon = JSON.parse(localStorage.getItem('eKhokhaAppliedCoupon'));
-        if (appliedCoupon && typeof eKhokhaCoupons !== 'undefined') {
-            const masterCoupon = eKhokhaCoupons.find(c => c.code === appliedCoupon.code);
-            
-            // Check if minimum order is still valid
-            if (masterCoupon && totalAmount >= masterCoupon.min_order_amount) {
-                if (masterCoupon.type === 'fixed') {
-                    discountAmount = masterCoupon.value;
-                } else if (masterCoupon.type === 'percentage') {
-                    discountAmount = (totalAmount * masterCoupon.value) / 100;
-                    if (masterCoupon.max_discount_amount && discountAmount > masterCoupon.max_discount_amount) {
-                        discountAmount = masterCoupon.max_discount_amount;
-                    }
-                }
-                
-                if (discountAmount > totalAmount) discountAmount = totalAmount; // Safety
-                finalPayableAmount -= discountAmount;
-
-                // Dynamically UI mein Coupon Row Inject karo
-                if (!document.getElementById('checkout-dynamic-coupon-row')) {
-                    const itemTotalRow = document.getElementById('checkout-item-total').parentElement;
-                    const couponRow = document.createElement('div');
-                    couponRow.id = 'checkout-dynamic-coupon-row';
-                    couponRow.className = 'bill-row';
-                    couponRow.style.color = '#388e3c'; // Green text
-                    couponRow.innerHTML = `
-                        <span style="color: inherit;">Coupon (${masterCoupon.code})</span>
-                        <span style="font-weight: 600;">-₹${Math.round(discountAmount)}</span>
-                    `;
-                    itemTotalRow.insertAdjacentElement('afterend', couponRow);
-                }
-            } else {
-                localStorage.removeItem('eKhokhaAppliedCoupon'); // Remove if cart value drops
-            }
-        }
-    }
-
-    // Bill Details update karna
-    document.getElementById('checkout-item-total').innerText = '₹' + totalAmount;
-    document.getElementById('checkout-grand-total').innerText = '₹' + Math.round(finalPayableAmount);
-    document.getElementById('footer-pay-amount').innerText = '₹' + Math.round(finalPayableAmount);
+function getCheckoutItems(){
+const mode=localStorage.getItem("eKhokhaCheckoutMode");
+try{
+if(mode==="route_product"){
+const data=JSON.parse(localStorage.getItem("eKhokhaCheckoutData"));
+return data?[data]:[];
+}
+if(mode==="route_cart")return JSON.parse(localStorage.getItem("eKhokhaCart"))||[];
+}catch(e){console.error("Checkout data error:",e)}
+return[];
 }
 
-// --- PLACE ORDER LOGIC --- //
-const placeOrderBtn = document.getElementById('place-order-btn');
+async function loadDefaultAddress(){
+const {data,error}=await supabaseClient.from("addresses").select("*").eq("user_id",currentUser.id).eq("is_default",true).maybeSingle();
+if(error){console.error("Default address error:",error);return}
+if(!data)return;
+document.getElementById("fullName").value=data.full_name||"";
+document.getElementById("mobile").value=data.mobile||"";
+document.getElementById("house").value=data.house||"";
+document.getElementById("street").value=data.street||"";
+document.getElementById("city").value=data.city||"";
+document.getElementById("state").value=data.state||"";
+document.getElementById("pincode").value=data.pincode||"";
+}
 
-let isSubmitting = false; // 🔴 Flag for Double-Tap Protection
+function getAppliedCoupon(){
+try{
+const c=JSON.parse(localStorage.getItem("eKhokhaAppliedCoupon"));
+return c&&c.code?c:null;
+}catch(e){return null}
+}
 
-if (placeOrderBtn) {
-    placeOrderBtn.addEventListener('click', () => {
-        
-        // --- 🔴 START: LOCK THE BUTTON ---
-        if (isSubmitting) return; 
-        isSubmitting = true; 
-        
-        const originalText = placeOrderBtn.innerHTML; 
-        placeOrderBtn.innerHTML = "Placing Order..."; 
-        placeOrderBtn.style.opacity = "0.7";
-        placeOrderBtn.style.pointerEvents = "none";
-        
-        const unlockButton = () => {
-            isSubmitting = false;
-            placeOrderBtn.innerHTML = originalText;
-            placeOrderBtn.style.opacity = "1";
-            placeOrderBtn.style.pointerEvents = "auto";
-        };
-        // --- END: LOCK THE BUTTON ---
+function getDisplayItems(){
+return getCheckoutItems().map(item=>{
+const product=getProductById(item.product_id);
+const variant=product?.variants?.find(v=>String(v.variant_id)===String(item.variant_id));
+return{
+...item,
+product,
+variant,
+product_name:product?.basic_info?.name||"Product",
+variant_value:item.variant_value||variant?.variant_value||"Free Size",
+quantity:Number(item.quantity||1)
+};
+});
+}
 
-        // 1. Form Validation (Address check)
-        const addressForm = document.getElementById('address-form');
-        if (!addressForm.checkValidity()) {
-            addressForm.reportValidity(); unlockButton();
-            return;
-        }
+async function buildSecureCheckoutPayload(){
+const items=getCheckoutItems();
+if(!items.length)throw new Error("Checkout list is empty.");
 
-        // 2. Order Data Prepare karna 
-        let checkoutItems = [];
-        const checkoutMode = localStorage.getItem('eKhokhaCheckoutMode');
+const rpcItems=items.map(item=>({
+product_id:item.product_id,
+variant_id:item.variant_id,
+quantity:Number(item.quantity)
+}));
 
-        if (checkoutMode === 'route_product') {
-            checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCheckoutData')) || [];
-        } else if (checkoutMode === 'route_cart') {
-            checkoutItems = JSON.parse(localStorage.getItem('eKhokhaCart')) || [];
-        }
-        
-        // --- 🔴 PATCH 1: STRICT VALIDATION ENGINE ---
-        if (!checkoutItems || checkoutItems.length === 0) {
-            alert("Security Alert: Your checkout list is empty! Order cannot be placed.");unlockButton();
-            return; 
-        }
+for(const item of rpcItems){
+if(!item.product_id||!item.variant_id)throw new Error("Invalid product or variant.");
+if(!Number.isInteger(item.quantity)||item.quantity<1||item.quantity>10)throw new Error("Invalid quantity.");
+}
 
-        let isDataValid = true;
-        let validationError = "";
+const address={
+full_name:document.getElementById("fullName")?.value.trim()||"",
+mobile:document.getElementById("mobile")?.value.trim()||"",
+house:document.getElementById("house")?.value.trim()||"",
+street:document.getElementById("street")?.value.trim()||"",
+city:document.getElementById("city")?.value.trim()||"",
+state:document.getElementById("state")?.value.trim()||"",
+pincode:document.getElementById("pincode")?.value.trim()||""
+};
 
-        checkoutItems.forEach(item => {
-            const productData = getProductById(item.product_id);
-            if (!productData) {
-                isDataValid = false;
-                validationError = `Error: Product ID (${item.product_id}) is invalid.`;
-            } else if (!item.quantity || item.quantity <= 0 || isNaN(item.quantity)) {
-                isDataValid = false;
-                validationError = `Error: Invalid quantity detected.`;
-            } else if (!item.size || item.size === '') {
-                isDataValid = false;
-                validationError = `Error: Missing size/variant.`;
-            }
-        });
+return{items:rpcItems,address,coupon:getAppliedCoupon()};
+}
 
-        if (!isDataValid) {
-            alert(validationError + "\nPlease check your order and try again.");unlockButton();
-            return; 
-        }
-        // -------------------------------------------
+async function renderCheckoutSummary(){
+const list=document.getElementById("checkout-items-list");
+if(!list)return;
 
-        // Total calculation from Live DB Price
-        let totalAmount = 0;
-        checkoutItems.forEach(item => {
-            const productData = getProductById(item.product_id);
-            if (productData) {
-                totalAmount += (productData.pricing.current_price * item.quantity);
-            }
-        });
+try{
+const items=getDisplayItems();
+if(!items.length)throw new Error("Checkout list is empty.");
 
-        // 🟢 FINAL COUPON CALCULATION BEFORE SAVING ORDER 🟢
-        let finalPayableAmount = totalAmount;
-        let finalDiscount = 0;
-        let usedCouponCode = null;
+list.innerHTML="";
 
-        if (checkoutMode === 'route_cart') {
-            const appliedCoupon = JSON.parse(localStorage.getItem('eKhokhaAppliedCoupon'));
-            if (appliedCoupon && typeof eKhokhaCoupons !== 'undefined') {
-                const masterCoupon = eKhokhaCoupons.find(c => c.code === appliedCoupon.code);
-                if (masterCoupon && totalAmount >= masterCoupon.min_order_amount) {
-                    if (masterCoupon.type === 'fixed') {
-                        finalDiscount = masterCoupon.value;
-                    } else if (masterCoupon.type === 'percentage') {
-                        finalDiscount = (totalAmount * masterCoupon.value) / 100;
-                        if (masterCoupon.max_discount_amount && finalDiscount > masterCoupon.max_discount_amount) {
-                            finalDiscount = masterCoupon.max_discount_amount;
-                        }
-                    }
-                    if (finalDiscount > totalAmount) finalDiscount = totalAmount;
-                    finalPayableAmount -= finalDiscount;
-                    usedCouponCode = masterCoupon.code;
-                }
-            }
-        }
+let localTotal=0;
 
-        // --- 🔴 PATCH 5: TOTAL AMOUNT VALIDATION ---
-        if (finalPayableAmount <= 0 || isNaN(finalPayableAmount)) {
-            alert("Security Alert: Invalid total amount calculation.");
-            unlockButton();
-            return; 
-        }
-        const orderId = "EKHOKHA-" + Math.floor(100000 + Math.random() * 900000);
+items.forEach(item=>{
+const product=item.product;
+const image=product?.images?.length?product.images[0]:"https://placehold.co/100x100/1a1a1a/ffffff?text=No+Image";
+const variantType=item.variant?.variant_type||"variant";
+const variantLabel=variantType==="color"?"Color":"Size";
+const price=Number(product?.pricing?.current_price||0);
+const itemTotal=price*item.quantity;
+localTotal+=itemTotal;
 
-        // EXACT CALCULATION OF ESTIMATED DELIVERY
-        const estDateObj = new Date();
-        estDateObj.setDate(estDateObj.getDate() + 4); // Aaj se 4 din baad ki delivery
-        const estimatedDeliveryString = estDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+const div=document.createElement("div");
+div.className="checkout-item";
+div.innerHTML=`
+<div class="mini-image"><img src="${escapeHtml(image)}" alt="${escapeHtml(item.product_name)}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"></div>
+<div class="mini-details">
+<div class="mini-title">${escapeHtml(item.product_name)}</div>
+<div class="mini-qty-price"><span>Qty: ${item.quantity} | ${escapeHtml(variantLabel)}: ${escapeHtml(item.variant_value)}</span><span class="mini-price">₹${Math.round(itemTotal)}</span></div>
+</div>`;
+list.appendChild(div);
+});
 
-        const latestOrder = {
-            orderId: orderId,
-            
-            // STRICT PRICE SNAPSHOT
-            items: checkoutItems.map(item => {
-                const productData = getProductById(item.product_id);
-                const currentPrice = productData ? productData.pricing.current_price : 0;
-                const originalPrice = productData ? productData.pricing.original_price : 0;
-                
-                return {
-                    product_id: item.product_id, 
-                    name: productData ? productData.basic_info.name : "Unknown Product",
-                    image: productData && productData.images[0] ? productData.images[0] : "https://placehold.co/100x100/1a1a1a/ffffff?text=No+Image",
-                    size: item.size,             
-                    quantity: item.quantity, 
-                    unit_price: currentPrice,          
-                    original_price: originalPrice,     
-                    item_total: currentPrice * item.quantity 
-                };
-            }),
-            
-            // 🟢 COUPON DETAILS ADDED TO ORDER SNAPSHOT 🟢
-            item_total: totalAmount,
-            discount_amount: Math.round(finalDiscount),
-            coupon_applied: usedCouponCode,
-            total: Math.round(finalPayableAmount),
+document.getElementById("checkout-dynamic-coupon-row")?.remove();
 
-            address: {
-                name: document.getElementById('fullName').value,
-                mobile: document.getElementById('mobile').value,
-                house: document.getElementById('house').value,
-                street: document.getElementById('street').value,
-                city: document.getElementById('city').value,
-                state: document.getElementById('state').value,
-                pincode: document.getElementById('pincode').value
-            },
-            paymentMethod: "Cash on Delivery",
-            date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-            status: "Pending",
-            estimatedDelivery: estimatedDeliveryString 
-        };
+const applied=getAppliedCoupon();
 
-        // A) Success Page Data
-        localStorage.setItem('eKhokhaLatestOrder', JSON.stringify(latestOrder));
+document.getElementById("checkout-item-total").innerText="₹"+Math.round(localTotal);
+document.getElementById("checkout-grand-total").innerText="₹"+Math.round(localTotal);
+document.getElementById("footer-pay-amount").innerText="₹"+Math.round(localTotal);
 
-        // B) Order History (Orders Page) ke liye (🔴 PHASE 2: DUPLICATE LOCK)
-        let userOrders = JSON.parse(localStorage.getItem('eKhokhaUserOrders')) || [];
-        
-        // Check karo ki kya ye orderId pehle se database mein hai?
-        const isDuplicate = userOrders.some(order => order.orderId === latestOrder.orderId);
-        
-        if (!isDuplicate) {
-            userOrders.push(latestOrder); 
-            localStorage.setItem('eKhokhaUserOrders', JSON.stringify(userOrders));
-        } else {
-            console.warn("Duplicate order detected and blocked from History.");
-        }
+if(applied?.code){
+const row=document.createElement("div");
+row.id="checkout-dynamic-coupon-row";
+row.className="bill-row";
+row.style.color="#388e3c";
+row.innerHTML=`<span>Coupon (${escapeHtml(applied.code)})</span><span style="font-weight:600;">Applied at checkout</span>`;
+document.getElementById("checkout-item-total").parentElement.insertAdjacentElement("afterend",row);
+}
 
-        // 3. Cart aur Temporary data ko clean karna
-        if (checkoutMode === 'route_cart') {
-            localStorage.setItem('eKhokhaCart', JSON.stringify([]));
-            localStorage.removeItem('eKhokhaAppliedCoupon'); // 🟢 Coupon clean kiya taaki naye order mein na aaye
-        }
-        
-        localStorage.removeItem('eKhokhaCheckoutData');
-        localStorage.removeItem('eKhokhaCheckoutMode');
+}catch(error){
+console.error("Checkout summary error:",error);
+list.innerHTML=`<div style="padding:15px;color:#d63031">${escapeHtml(error.message)}</div>`;
+}
+}
 
-        // 4. Fake Delay & Order Success Page par bhejna
-        setTimeout(() => {
-            window.location.href = "success.html"; 
-        }, 1000); // 1 second ka premium loading effect
-    });
+document.getElementById("place-order-btn")?.addEventListener("click",placeOrder);
+
+async function placeOrder(){
+if(isSubmitting)return;
+
+const btn=document.getElementById("place-order-btn");
+if(!btn)return;
+
+isSubmitting=true;
+const originalText=btn.innerHTML;
+btn.innerHTML="Placing Order...";
+btn.style.opacity=".7";
+btn.style.pointerEvents="none";
+
+const unlock=()=>{
+isSubmitting=false;
+btn.innerHTML=originalText;
+btn.style.opacity="1";
+btn.style.pointerEvents="auto";
+};
+
+try{
+const {data:sessionData,error:sessionError}=await supabaseClient.auth.getSession();
+if(sessionError)throw sessionError;
+
+if(!sessionData?.session?.user){
+window.location.href="login.html";
+return;
+}
+
+currentUser=sessionData.session.user;
+
+const form=document.getElementById("address-form");
+if(!form.checkValidity()){
+form.reportValidity();
+unlock();
+return;
+}
+
+const payload=await buildSecureCheckoutPayload();
+
+const couponCode=payload.coupon?.code||null;
+
+const {data,error}=await supabaseClient.rpc("create_order_secure",{
+p_items:payload.items,
+p_address:payload.address,
+p_coupon_code:couponCode
+});
+
+if(error)throw new Error(error.message||"Unable to place order.");
+
+if(!data?.order_id||!data?.order_code){
+throw new Error("Order was not created correctly.");
+}
+
+const displayItems=getDisplayItems();
+
+const latestOrder={
+order_id:data.order_id,
+orderId:data.order_code,
+items:displayItems.map(item=>({
+product_id:item.product_id,
+variant_id:item.variant_id,
+product_name:item.product_name,
+variant_value:item.variant_value,
+quantity:item.quantity,
+unit_price:item.product?.pricing?.current_price||0,
+item_total:Number(item.product?.pricing?.current_price||0)*item.quantity
+})),
+item_total:Number(data.item_total||0),
+discount_amount:Number(data.discount_amount||0),
+coupon_applied:data.coupon_code||null,
+total:Number(data.total_amount||0),
+address:{
+name:payload.address.full_name,
+mobile:payload.address.mobile,
+house:payload.address.house,
+street:payload.address.street,
+city:payload.address.city,
+state:payload.address.state,
+pincode:payload.address.pincode
+},
+payment_method:data.payment_method||"cod",
+status:"Pending",
+estimatedDelivery:formatDate(data.estimated_delivery)
+};
+
+localStorage.setItem("eKhokhaLatestOrder",JSON.stringify(latestOrder));
+
+if(localStorage.getItem("eKhokhaCheckoutMode")==="route_cart"){
+localStorage.setItem("eKhokhaCart",JSON.stringify([]));
+}
+
+localStorage.removeItem("eKhokhaAppliedCoupon");
+localStorage.removeItem("eKhokhaCoupons");
+localStorage.removeItem("eKhokhaCheckoutData");
+localStorage.removeItem("eKhokhaCheckoutMode");
+
+window.location.href="success.html";
+
+}catch(error){
+console.error("Secure checkout error:",error);
+alert(error.message||"Unable to place order. Please try again.");
+unlock();
+}
+}
+
+function formatDate(date){
+if(!date)return"";
+return new Date(date+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+}
+
+function escapeHtml(value){
+return String(value??"").replace(/[&<>"']/g,char=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[char]));
 }

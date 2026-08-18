@@ -379,3 +379,37 @@ body {
     padding: 2px 6px;
     border-radius: 12px;
 }
+/* ==========================================
+   🔐 E-KHOKHA AUTH PAGE
+   ========================================== */
+.auth-page { min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px 16px; background:var(--bg-light); box-sizing:border-box; }
+.auth-card { width:100%; max-width:400px; background:var(--card-bg); padding:28px 22px; border-radius:12px; box-shadow:var(--shadow-light); margin-top:-10vh; box-sizing:border-box; }
+.auth-brand { text-align:center; margin-bottom:26px; }
+.auth-brand h1 { margin:0 0 6px; font-size:25px; font-weight:800; color:var(--primary-color); }
+.auth-brand p { margin:0; color:var(--text-grey); font-size:14px; }
+.auth-field { margin-bottom:16px; }
+.auth-field label { display:block; margin-bottom:7px; color:var(--text-dark); font-size:13px; font-weight:600; }
+.auth-field input { width:100%; height:46px; padding:0 12px; border:1px solid #dfe3e8; border-radius:7px; background:#fff; color:var(--text-dark); font-size:14px; outline:none; box-sizing:border-box; }
+.auth-field input:focus { border-color:var(--primary-color); }
+.password-wrap { position:relative; }
+.password-wrap input { padding-right:45px; }
+.password-toggle { position:absolute; right:0; top:0; width:45px; height:46px; border:0; background:transparent; color:var(--text-grey); cursor:pointer; }
+.password-toggle .material-symbols-outlined { font-size:20px; }
+.auth-options { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:2px 0 18px; font-size:12px; }
+.remember-me { display:flex; align-items:center; gap:6px; color:var(--text-grey); }
+.remember-me input { accent-color:var(--primary-color); }
+.forgot-btn { border:0; background:none; padding:0; color:var(--primary-color); font-size:12px; cursor:pointer; }
+.auth-submit { width:100%; height:46px; border:0; border-radius:7px; background:var(--primary-color); color:#fff; font-size:14px; font-weight:700; cursor:pointer; }
+.auth-submit:disabled { opacity:.65; cursor:not-allowed; }
+.auth-message { margin:0 0 14px; padding:10px; border-radius:6px; font-size:12px; line-height:1.4; }
+.auth-message.error { background:#ffebee; color:#c62828; }
+.auth-message.success { background:#e8f5e9; color:#2e7d32; }
+.auth-divider { display:flex; align-items:center; gap:10px; margin:22px 0; color:#999; font-size:11px; }
+.auth-divider::before, .auth-divider::after { content:""; flex:1; height:1px; background:#e5e7e9; }
+.auth-switch { margin:0; text-align:center; color:var(--text-grey); font-size:13px; }
+.auth-switch a { color:var(--primary-color); font-weight:700; text-decoration:none; }
+.password-hint {
+    margin-top:6px;
+    color:var(--text-grey);
+    font-size:11px;
+}

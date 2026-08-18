@@ -1,140 +1,236 @@
-// ==========================================
-// ⭐ E-KHOKHA REVIEW LOGIC (PHASE 3 - SECURE)
-// ==========================================
+let currentRatingValue = 0;
+let activeProductId = null;
+let currentUser = null;
+let productReviews = [];
 
-let currentRatingValue = 0; // Tracks stars selected in modal
-const MOCK_CURRENT_USER_ID = "auth-uuid-placeholder-001"; // Rule 3: Simulate logged-in user
+document.addEventListener("DOMContentLoaded", initReviews);
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. GET ACTIVE PRODUCT ID
-    const activeProductId = localStorage.getItem('eKhokhaActiveProductId');
+async function initReviews() {
+    activeProductId = localStorage.getItem("eKhokhaActiveProductId");
+    
     if (!activeProductId) {
         alert("Product not found!");
         window.history.back();
         return;
     }
-
-    // 2. RENDER OVERVIEW (Rule 9)
-    function renderOverview() {
-        const ratingData = calculateDynamicRating(activeProductId);
-        const overviewContainer = document.getElementById('rating-overview-container');
-        
-        overviewContainer.innerHTML = `
-            <div class="rating-big">${ratingData.score > 0 ? ratingData.score : '0.0'}</div>
-            <div>
-                <div class="rating-stars">
-                    ${'★'.repeat(Math.round(ratingData.score))}${'☆'.repeat(5 - Math.round(ratingData.score))}
-                </div>
-                <div class="rating-count">${ratingData.rating_count} verified ratings</div>
-            </div>
-        `;
+    
+    setupStars();
+    
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        currentUser = session?.user || null;
+        await loadReviews();
+    } catch (error) {
+        console.error("Review initialization error:", error);
+        showLoadError();
     }
+}
 
-    // 3. SECURE RENDER REVIEWS LIST (Rule 6 & 7)
-    function renderReviewsList() {
-        const reviewsContainer = document.getElementById('reviews-list-container');
-        const emptyState = document.getElementById('no-reviews-state');
-        reviewsContainer.innerHTML = ''; // Clear
-
-        const approvedReviews = getApprovedReviews(activeProductId);
-
-        if (approvedReviews.length === 0) {
-            emptyState.style.display = 'block';
-            return;
-        }
-        emptyState.style.display = 'none';
-
-        approvedReviews.forEach(review => {
-            // Secure DOM Elements
-            const card = document.createElement('div');
-            card.className = 'review-card';
-
-            // Top row
-            const header = document.createElement('div');
-            header.className = 'review-header';
-            
-            const info = document.createElement('div');
-            info.className = 'reviewer-info';
-            
-            // Masking User Name for privacy logic (Future feature, hardcoding "User" for now)
-            info.innerHTML = `
-                <div class="reviewer-avatar">U</div>
-                <div>
-                    <div class="reviewer-name">Verified User</div>
-                    ${review.is_verified_purchase ? `<div class="verified-badge"><span class="material-symbols-outlined" style="font-size:14px;">verified</span> Verified Purchase</div>` : ''}
-                </div>
-            `;
-            
-            // Stars & Date
-            const rightSide = document.createElement('div');
-            rightSide.style.textAlign = 'right';
-            rightSide.innerHTML = `
-                <div style="color:#ffb800; font-size:14px;">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
-                <div class="review-date">${new Date(review.created_at).toLocaleDateString()}</div>
-            `;
-
-            header.appendChild(info);
-            header.appendChild(rightSide);
-
-            // Review Text (SECURE TEXTCONTENT INJECTION)
-            const textEl = document.createElement('div');
-            textEl.className = 'review-text';
-            textEl.textContent = review.review_text; // NO innerHTML vulnerability!
-
-            card.appendChild(header);
-            card.appendChild(textEl);
-            reviewsContainer.appendChild(card);
-        });
-    }
-
+async function loadReviews() {
+    const { data, error } = await supabaseClient
+        .from("reviews")
+        .select("review_id,product_id,user_id,rating,review_text,status,is_verified_purchase,created_at")
+        .eq("product_id", activeProductId)
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+    
+    if (error) throw error;
+    
+    productReviews = data || [];
     renderOverview();
     renderReviewsList();
+}
 
-    // 4. STAR RATING SELECTOR LOGIC
-    const stars = document.querySelectorAll('#star-selector span');
+function renderOverview() {
+    const container = document.getElementById("rating-overview-container");
+    
+    if (!productReviews.length) {
+        container.innerHTML = `
+        <div class="rating-big">0.0</div>
+        <div>
+            <div class="rating-stars">☆☆☆☆☆</div>
+            <div class="rating-count">0 verified ratings</div>
+        </div>`;
+        return;
+    }
+    
+    const total = productReviews.reduce((sum, r) => sum + Number(r.rating), 0);
+    const score = total / productReviews.length;
+    const rounded = Math.round(score);
+    
+    container.innerHTML = `
+    <div class="rating-big">${score.toFixed(1)}</div>
+    <div>
+        <div class="rating-stars">${"★".repeat(rounded)}${"☆".repeat(5-rounded)}</div>
+        <div class="rating-count">${productReviews.length} verified rating${productReviews.length===1?"":"s"}</div>
+    </div>`;
+}
+
+function renderReviewsList() {
+    const container = document.getElementById("reviews-list-container");
+    const empty = document.getElementById("no-reviews-state");
+    
+    container.innerHTML = "";
+    
+    if (!productReviews.length) {
+        empty.style.display = "block";
+        return;
+    }
+    
+    empty.style.display = "none";
+    
+    productReviews.forEach(review => {
+        const card = document.createElement("div");
+        card.className = "review-card";
+        
+        const header = document.createElement("div");
+        header.className = "review-header";
+        
+        const info = document.createElement("div");
+        info.className = "reviewer-info";
+        
+        info.innerHTML = `
+        <div class="reviewer-avatar">U</div>
+        <div>
+            <div class="reviewer-name">Verified User</div>
+            ${review.is_verified_purchase?`<div class="verified-badge"><span class="material-symbols-outlined" style="font-size:14px;">verified</span> Verified Purchase</div>`:""}
+        </div>`;
+        
+        const right = document.createElement("div");
+        right.style.textAlign = "right";
+        right.innerHTML = `
+        <div style="color:#ffb800;font-size:14px;">${"★".repeat(Number(review.rating))}${"☆".repeat(5-Number(review.rating))}</div>
+        <div class="review-date">${formatDate(review.created_at)}</div>`;
+        
+        header.appendChild(info);
+        header.appendChild(right);
+        
+        const text = document.createElement("div");
+        text.className = "review-text";
+        text.textContent = review.review_text || "";
+        
+        card.appendChild(header);
+        card.appendChild(text);
+        container.appendChild(card);
+    });
+}
+
+function setupStars() {
+    const stars = document.querySelectorAll("#star-selector span");
+    
     stars.forEach(star => {
-        star.addEventListener('click', function() {
-            currentRatingValue = parseInt(this.getAttribute('data-val'));
+        star.addEventListener("click", () => {
+            currentRatingValue = Number(star.dataset.val);
             
-            // Update UI Stars
             stars.forEach(s => {
-                if (parseInt(s.getAttribute('data-val')) <= currentRatingValue) {
-                    s.classList.add('active');
-                } else {
-                    s.classList.remove('active');
-                }
+                s.classList.toggle("active", Number(s.dataset.val) <= currentRatingValue);
             });
         });
     });
-});
+}
 
-// 5. MODAL CONTROLS
-window.openReviewModal = function() {
-    document.getElementById('review-modal').classList.add('active');
+window.openReviewModal = async function() {
+    if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+    }
+    
+    const { data: existing, error } = await supabaseClient
+        .from("reviews")
+        .select("review_id")
+        .eq("product_id", activeProductId)
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+    
+    if (error) {
+        console.error(error);
+        alert("Unable to check review status.");
+        return;
+    }
+    
+    if (existing) {
+        alert("You have already reviewed this product.");
+        return;
+    }
+    
+    currentRatingValue = 0;
+    document.getElementById("review-text-input").value = "";
+    document.querySelectorAll("#star-selector span").forEach(s => s.classList.remove("active"));
+    document.getElementById("review-modal").classList.add("active");
 };
+
 window.closeReviewModal = function() {
-    document.getElementById('review-modal').classList.remove('active');
+    document.getElementById("review-modal").classList.remove("active");
 };
 
-// 6. SUBMIT REVIEW LOGIC (Rule 8)
-window.handleReviewSubmit = function() {
-    const activeProductId = localStorage.getItem('eKhokhaActiveProductId');
-    const textInput = document.getElementById('review-text-input').value;
-
-    // Use app.js logic (Rule 5 & 7 validation happens inside submitReview)
-    const result = submitReview(activeProductId, MOCK_CURRENT_USER_ID, currentRatingValue, textInput);
-
-    if (result.success) {
-        alert(result.message + " (It will appear here once approved by admin).");
+window.handleReviewSubmit = async function() {
+    if (!currentUser) {
+        window.location.href = "login.html";
+        return;
+    }
+    
+    if (!currentRatingValue) {
+        alert("Please select a rating.");
+        return;
+    }
+    
+    const text = document.getElementById("review-text-input").value.trim();
+    
+    if (!text) {
+        alert("Please write your review.");
+        return;
+    }
+    
+    if (text.length > 500) {
+        alert("Review cannot exceed 500 characters.");
+        return;
+    }
+    
+    const button = document.querySelector(".submit-btn");
+    button.disabled = true;
+    button.textContent = "Submitting...";
+    
+    try {
+        const { error } = await supabaseClient.from("reviews").insert({
+            product_id: activeProductId,
+            user_id: currentUser.id,
+            rating: currentRatingValue,
+            review_text: text,
+            status: "pending",
+            is_verified_purchase: true
+        });
+        
+        if (error) {
+            if (error.code === "23505") {
+                throw new Error("You have already reviewed this product.");
+            }
+            throw error;
+        }
+        
+        alert("Review submitted successfully! It will appear after approval.");
         closeReviewModal();
-        
-        // Reset form
         currentRatingValue = 0;
-        document.querySelectorAll('#star-selector span').forEach(s => s.classList.remove('active'));
-        document.getElementById('review-text-input').value = '';
-        
-        // We do NOT call renderReviewsList() immediately because the new review is "pending" (Rule 6)
-    } else {
-        alert(result.message); // Show validation error (e.g., text too long)
+        document.querySelectorAll("#star-selector span").forEach(s => s.classList.remove("active"));
+        document.getElementById("review-text-input").value = "";
+    } catch (error) {
+        console.error("Review submit error:", error);
+        alert(error.message || "Unable to submit review.");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Submit Review";
     }
 };
+
+function formatDate(date) {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function showLoadError() {
+    document.getElementById("rating-overview-container").innerHTML = `
+    <div style="width:100%;text-align:center;color:#636e72;">Unable to load reviews.</div>`;
+}
+
+document.getElementById("review-modal")?.addEventListener("click", e => {
+    if (e.target.id === "review-modal") closeReviewModal();
+});

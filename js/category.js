@@ -2,17 +2,26 @@
 // 📂 E-KHOKHA CATEGORY LOGIC (PHASE 3 - SECURE)
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const tabsContainer = document.getElementById('page-category-tabs');
     const productsGrid = document.getElementById('category-products-grid');
     const emptyState = document.getElementById('category-empty-state');
 
-    // Make sure master database is loaded (Rule 1)
-    if (typeof eKhokhaCategories === 'undefined' || typeof eKhokhaProducts === 'undefined') {
-        console.error("E-Khokha Error: Master database not found!");
-        return;
-    }
+    // ==========================================
+// 🔥 WAIT FOR SUPABASE CATALOG
+// ==========================================
 
+if (typeof window.eKhokhaDataReady === 'undefined') {
+    console.error("E-Khokha Error: Supabase catalog loader not found!");
+    return;
+}
+
+try {
+    await window.eKhokhaDataReady;
+} catch (error) {
+    console.error("E-Khokha Error: Failed to load catalog.", error);
+    return;
+}
     // 1. READ URL SLUG (List 2, Point 5: URL mein slug)
     const urlParams = new URLSearchParams(window.location.search);
     let activeSlug = urlParams.get('category') || 'all';

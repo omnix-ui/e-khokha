@@ -1,193 +1,255 @@
-// --- 1️⃣ LOCAL STORAGE SE DATA LENA ---
-let userOrders = JSON.parse(localStorage.getItem('eKhokhaUserOrders')) || [];
+let userOrders=[];
+const STATUS_LABELS={pending:"Pending",confirmed:"Confirmed",shipped:"Shipped",out_for_delivery:"Out for Delivery","out-for-delivery":"Out for Delivery","out for delivery":"Out for Delivery",delivered:"Delivered",cancelled:"Cancelled"};
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded",initOrders);
+
+async function initOrders(){
     setupOrderFilters();
-    
-    // Sort latest → oldest 
-    const sortedOrders = [...userOrders].reverse();
-    
-    // Cards render function ko call karo
-    renderOrderCards(sortedOrders);
-});
+    try{
+        const {data:{session}}=await supabaseClient.auth.getSession();
+        if(!session){
+            window.location.href="login.html";
+            return;
+        }
 
-// --- 2️⃣ ORDER FILTERS LOGIC (🔴 STRICT MATCHING APPLIED) ---
-function setupOrderFilters() {
-    const filterTabs = document.querySelectorAll('.filter-tab');
-    
-    filterTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            filterTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            
-            // Ab toLowerCase nahi hoga, strictly exact string match hogi (e.g. "Out for Delivery")
-            const selectedStatus = tab.getAttribute('data-status'); 
-            
-            let sortedBase = [...userOrders].reverse();
-            let filteredOrders = [];
-            
-            if (selectedStatus === 'All') {
-                filteredOrders = sortedBase;
-            } else {
-                filteredOrders = sortedBase.filter(order => order.status === selectedStatus);
-            }
-            renderOrderCards(filteredOrders);
+        const {data:orders,error:ordersError}=await supabaseClient.from("orders").select("*").eq("user_id",session.user.id).order("created_at",{ascending:false});
+        if(ordersError) throw ordersError;
+
+        if(!orders||orders.length===0){
+            userOrders=[];
+            showOrders([]);
+            return;
+        }
+
+        const orderIds=orders.map(o=>o.order_id);
+
+        const {data:items,error:itemsError}=await supabaseClient.from("order_items").select("*").in("order_id",orderIds);
+        if(itemsError) throw itemsError;
+
+        const productIds=[...new Set((items||[]).map(i=>i.product_id).filter(Boolean))];
+
+        let images=[];
+        if(productIds.length){
+            const {data:imageData,error:imageError}=await supabaseClient.from("product_images").select("product_id,image_url,display_order,is_primary").in("product_id",productIds).order("display_order",{ascending:true});
+            if(imageError) console.warn("Product image error:",imageError);
+            images=imageData||[];
+        }
+
+        const imageMap={};
+        images.forEach(img=>{
+            if(!imageMap[img.product_id]) imageMap[img.product_id]=img.image_url;
+            if(img.is_primary) imageMap[img.product_id]=img.image_url;
+        });
+
+        const grouped={};
+        (items||[]).forEach(item=>{
+            if(!grouped[item.order_id]) grouped[item.order_id]=[];
+            grouped[item.order_id].push({
+                id:item.order_item_id,
+                product_id:item.product_id,
+                variant_id:item.variant_id,
+                name:item.product_name||"Product",
+                image:imageMap[item.product_id]||"https://placehold.co/150x150/1a1a1a/ffffff?text=Product",
+                size:item.variant_value||"N/A",
+                quantity:item.quantity||1,
+                unit_price:Number(item.unit_price)||0,
+                original_price:Number(item.original_price)||0,
+                item_total:Number(item.item_total)||0
+            });
+        });
+
+        userOrders=orders.map(order=>({
+            id:order.order_id,
+            orderId:order.order_code||order.order_id,
+            date:formatDate(order.created_at),
+            status:formatStatus(order.order_status),
+            total:Number(order.total_amount)||0,
+            paymentMethod:formatPaymentMethod(order.payment_method),
+            estimatedDelivery:formatDateOnly(order.estimated_delivery),
+            address:{
+                name:order.shipping_name,
+                mobile:order.shipping_mobile,
+                house:order.shipping_house,
+                street:order.shipping_street,
+                city:order.shipping_city,
+                state:order.shipping_state,
+                pincode:order.shipping_pincode
+            },
+            items:grouped[order.order_id]||[]
+        }));
+
+        showOrders(userOrders);
+    }catch(error){
+        console.error("My Order Error:",error);
+        showError();
+    }
+}
+
+function setupOrderFilters(){
+    document.querySelectorAll(".filter-tab").forEach(tab=>{
+        tab.addEventListener("click",()=>{
+            document.querySelectorAll(".filter-tab").forEach(t=>t.classList.remove("active"));
+            tab.classList.add("active");
+            const status=tab.dataset.status;
+            const filtered=status==="All"?userOrders:userOrders.filter(order=>order.status===status);
+            renderOrderCards(filtered);
         });
     });
 }
 
-// --- 🔴 PATCH 1: STRICT STATUS MAPPING FUNCTION ---
-function getStatusClasses(status) {
-    // Sirf allowed exact strings par hi background aur text colour assign hoga
-    const s = (status || '').trim();
-    switch (s) {
-        case 'Pending': return { bg: 'status-pending', text: 'text-pending' };
-        case 'Confirmed': return { bg: 'status-confirmed', text: 'text-confirmed' };
-        case 'Shipped': return { bg: 'status-shipped', text: 'text-shipped' };
-        case 'Out for Delivery': return { bg: 'status-out-for-delivery', text: 'text-out-for-delivery' };
-        case 'Delivered': return { bg: 'status-delivered', text: 'text-delivered' };
-        case 'Cancelled': return { bg: 'status-cancelled', text: 'text-cancelled' };
-        // Agar DB se koi kachra aaya, toh default Pending mein daal do
-        default: return { bg: 'status-pending', text: 'text-pending' }; 
+function showOrders(orders){
+    document.getElementById("order-loading").style.display="none";
+    renderOrderCards(orders);
+}
+
+function showError(){
+    const loading=document.getElementById("order-loading");
+    loading.innerHTML=`<span class="material-symbols-outlined empty-icon">error</span><h2>Something went wrong</h2><p>Unable to load your orders.</p>`;
+}
+
+function formatStatus(status){
+    const s=String(status||"").toLowerCase().trim();
+    return STATUS_LABELS[s]||"Pending";
+}
+
+function formatPaymentMethod(method){
+    if(String(method||"").toLowerCase()==="cod") return "Cash on Delivery";
+    return method||"N/A";
+}
+
+function formatDate(date){
+    if(!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+}
+
+function formatDateOnly(date){
+    if(!date) return "N/A";
+    const d=new Date(date);
+    if(Number.isNaN(d.getTime())) return date;
+    return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+}
+
+function escapeHtml(value){
+    return String(value??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+
+function getStatusClasses(status){
+    switch(status){
+        case"Pending":return{bg:"status-pending",text:"text-pending"};
+        case"Confirmed":return{bg:"status-confirmed",text:"text-confirmed"};
+        case"Shipped":return{bg:"status-shipped",text:"text-shipped"};
+        case"Out for Delivery":return{bg:"status-out-for-delivery",text:"text-out-for-delivery"};
+        case"Delivered":return{bg:"status-delivered",text:"text-delivered"};
+        case"Cancelled":return{bg:"status-cancelled",text:"text-cancelled"};
+        default:return{bg:"status-pending",text:"text-pending"};
     }
 }
 
-// --- 4️⃣ & 8️⃣ RENDER CARDS & EMPTY STATE LOGIC ---
-function renderOrderCards(ordersArray) {
-    const container = document.getElementById('order-list-container');
-    const emptyState = document.getElementById('empty-state');
-    
-    if (ordersArray.length === 0) {
-        container.style.display = 'none';
-        emptyState.style.display = 'flex';
-        return; 
+function renderOrderCards(ordersArray){
+    const container=document.getElementById("order-list-container");
+    const emptyState=document.getElementById("empty-state");
+
+    if(ordersArray.length===0){
+        container.style.display="none";
+        emptyState.style.display="flex";
+        return;
     }
-    
-    emptyState.style.display = 'none';
-    container.style.display = 'flex';
-    container.innerHTML = ''; 
 
-    ordersArray.forEach(order => {
-        if (!order.items || order.items.length === 0) return;
+    emptyState.style.display="none";
+    container.style.display="flex";
+    container.innerHTML="";
 
-        const firstItem = order.items[0];
-        let extraItemsHtml = '';
-        if (order.items.length > 1) {
-            extraItemsHtml = `<span class="more-items-badge">+${order.items.length - 1} more items</span>`;
-        }
+    ordersArray.forEach(order=>{
+        if(!order.items.length) return;
 
-        // 🔴 UPDATE: Get both dot background and text colors
-        const statusClasses = getStatusClasses(order.status);
+        const firstItem=order.items[0];
+        const extraItems=order.items.length>1?`<span class="more-items-badge">+${order.items.length-1} more items</span>`:"";
+        const statusClasses=getStatusClasses(order.status);
+        const displayName=escapeHtml(firstItem.name);
+        const displayImage=escapeHtml(firstItem.image);
+        const displaySize=escapeHtml(firstItem.size);
 
-        const displayName = firstItem.name || `Product (${firstItem.product_id || 'Unknown'})`;
-        const displayImage = firstItem.image || 'https://placehold.co/150x150/1a1a1a/ffffff?text=No+Image'; 
-        const displayTotal = order.total ? order.total : 0; 
-        const displaySize = firstItem.size || 'N/A';
-        const displayQty = firstItem.quantity || 1;
-
-        const cardHtml = `
-            <div class="order-card">
-                <div class="order-card-header">
-                    <span class="order-id">#${order.orderId}</span>
-                    <span class="order-date">${order.date}</span>
+        container.innerHTML+=`
+        <div class="order-card">
+            <div class="order-card-header">
+                <span class="order-id">#${escapeHtml(order.orderId)}</span>
+                <span class="order-date">${escapeHtml(order.date)}</span>
+            </div>
+            <div class="order-card-body">
+                <div class="order-image">
+                    <img src="${displayImage}" alt="${displayName}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">
                 </div>
-                <div class="order-card-body">
-                    <div class="order-image">
-                        <img src="${displayImage}" alt="${displayName}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                <div class="order-details">
+                    <div class="order-product-name">${displayName} ${extraItems}</div>
+                    <div class="order-product-meta">Variant: ${displaySize} &nbsp;|&nbsp; Qty: ${firstItem.quantity}</div>
+                    <div class="order-price-payment">
+                        <span class="order-price">₹${order.total.toLocaleString("en-IN")}</span>
+                        <span class="order-payment">${escapeHtml(order.paymentMethod)}</span>
                     </div>
-                    <div class="order-details">
-                        <div class="order-product-name">${displayName} ${extraItemsHtml}</div>
-                        <div class="order-product-meta">Size: ${displaySize} &nbsp;|&nbsp; Qty: ${displayQty}</div>
-                        <div class="order-price-payment">
-                            <span class="order-price">₹${displayTotal}</span>
-                            <span class="order-payment">${order.paymentMethod}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="order-card-footer">
-                    <!-- 🔴 UPDATE: Status Dot aur Text dono par color apply hua -->
-                    <div class="order-status ${statusClasses.text}">
-                        <span class="status-dot ${statusClasses.bg}"></span> ${order.status}
-                    </div>
-                    <button class="view-details-btn" onclick="openOrderModal('${order.orderId}')">
-                        View Details
-                    </button>
                 </div>
             </div>
-        `;
-        container.innerHTML += cardHtml;
+            <div class="order-card-footer">
+                <div class="order-status ${statusClasses.text}">
+                    <span class="status-dot ${statusClasses.bg}"></span> ${escapeHtml(order.status)}
+                </div>
+                <button class="view-details-btn" onclick="openOrderModal('${escapeHtml(order.id)}')">View Details</button>
+            </div>
+        </div>`;
     });
 }
 
-// --- 7️⃣ VIEW DETAILS MODAL ---
-window.openOrderModal = function(orderId) {
-    const order = userOrders.find(o => o.orderId === orderId);
-    if (!order) return;
+window.openOrderModal=function(orderId){
+    const order=userOrders.find(o=>o.id===orderId);
+    if(!order)return;
 
-    document.getElementById('modal-order-id').innerText = '#' + order.orderId;
-    document.getElementById('modal-order-date').innerText = order.date;
-    
-    // 🔴 UPDATE: Modal mein bhi strict status colour apply karo
-    const statusEl = document.getElementById('modal-order-status');
-    statusEl.innerText = order.status;
-    const statusClasses = getStatusClasses(order.status);
-    statusEl.className = statusClasses.text; // Text class add kardi
-    statusEl.style.color = ''; // Purana inline hardcoded color hata diya
+    document.getElementById("modal-order-id").innerText="#"+order.orderId;
+    document.getElementById("modal-order-date").innerText=order.date;
 
-    document.getElementById('modal-est-delivery').innerText = order.estimatedDelivery ? order.estimatedDelivery : "N/A";
+    const statusEl=document.getElementById("modal-order-status");
+    statusEl.innerText=order.status;
+    statusEl.className=getStatusClasses(order.status).text;
 
-    document.getElementById('modal-payment-method').innerText = order.paymentMethod;
-    
-    const displayTotal = order.total ? order.total : 0;
-    document.getElementById('modal-total-amount').innerText = '₹' + displayTotal;
+    document.getElementById("modal-est-delivery").innerText=order.estimatedDelivery;
+    document.getElementById("modal-payment-method").innerText=order.paymentMethod;
+    document.getElementById("modal-total-amount").innerText="₹"+order.total.toLocaleString("en-IN");
 
-    const address = order.address || {};
-    document.getElementById('modal-address').innerHTML = `
-        <strong>${address.name || 'N/A'}</strong><br>
-        ${address.house || ''}, ${address.street || ''}<br>
-        ${address.city || ''}, ${address.state || ''} - ${address.pincode || ''}<br>
-        Mobile: ${address.mobile || 'N/A'}
-    `;
+    const address=order.address;
+    document.getElementById("modal-address").innerHTML=`
+    <strong>${escapeHtml(address.name||"N/A")}</strong><br>
+    ${escapeHtml(address.house||"")}, ${escapeHtml(address.street||"")}<br>
+    ${escapeHtml(address.city||"")}, ${escapeHtml(address.state||"")} - ${escapeHtml(address.pincode||"")}<br>
+    Mobile: ${escapeHtml(address.mobile||"N/A")}`;
 
-    const productsList = document.getElementById('modal-products-list');
-    productsList.innerHTML = '';
-    
-    order.items.forEach(item => {
-        const itemName = item.name || `Product (${item.product_id || 'Unknown'})`;
-        const itemImage = item.image || 'https://placehold.co/100x100/1a1a1a/ffffff?text=No+Image';
-        
-        const unitPrice = item.unit_price !== undefined ? item.unit_price : (item.price || 0); 
-        const itemQty = item.quantity || 1;
-        const itemSize = item.size || 'N/A';
-        const itemTotal = item.item_total !== undefined ? item.item_total : (unitPrice * itemQty);
+    const productsList=document.getElementById("modal-products-list");
+    productsList.innerHTML="";
 
-        productsList.innerHTML += `
-            <div class="modal-product-item">
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <img src="${itemImage}" alt="${itemName}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
-                    <div class="modal-product-info">
-                        <span class="modal-product-name">${itemName}</span>
-                        <span class="modal-product-meta">Size: ${itemSize} | Qty: ${itemQty}</span>
-                    </div>
+    order.items.forEach(item=>{
+        productsList.innerHTML+=`
+        <div class="modal-product-item">
+            <div style="display:flex;gap:12px;align-items:center;">
+                <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                <div class="modal-product-info">
+                    <span class="modal-product-name">${escapeHtml(item.name)}</span>
+                    <span class="modal-product-meta">Variant: ${escapeHtml(item.size)} | Qty: ${item.quantity}</span>
                 </div>
-                <span class="modal-product-price">₹${itemTotal}</span>
             </div>
-        `;
+            <span class="modal-product-price">₹${item.item_total.toLocaleString("en-IN")}</span>
+        </div>`;
     });
 
-    document.getElementById('order-modal').classList.add('active');
-}
-
-window.closeOrderModal = function() {
-    document.getElementById('order-modal').classList.remove('active');
-}
-
-// --- BACK BUTTON LOGIC ---
-window.handleBackButton = function(event) {
-    event.preventDefault(); 
-    if (window.history.length > 1 && document.referrer !== "") {
-        window.history.back(); 
-    } else {
-        window.location.href = "../index.html"; 
-    }
+    document.getElementById("order-modal").classList.add("active");
 };
+
+window.closeOrderModal=function(){
+    document.getElementById("order-modal").classList.remove("active");
+};
+
+window.handleBackButton=function(event){
+    event.preventDefault();
+    if(window.history.length>1&&document.referrer!=="") window.history.back();
+    else window.location.href="../index.html";
+};
+
+document.getElementById("order-modal")?.addEventListener("click",e=>{
+    if(e.target.id==="order-modal") closeOrderModal();
+});

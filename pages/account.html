@@ -2,128 +2,157 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <title>My Account - E-KHOKHA</title>
-    
-    <!-- Google Material Icons -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
-    
-    <!-- CSS Links -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/account.css">
 </head>
 <body>
 
-    <!-- 1️⃣ ACCOUNT HEADER -->
-    <header class="top-header">
-        <a href="#" onclick="window.history.back(); return false;" class="header-icon">
-            <span class="material-symbols-outlined">arrow_back</span>
-        </a>
-<div class="header-title" style="font-weight: 700; color: #1a1a1a;">My Account</div>
-
-        <div class="header-icon" style="opacity: 0;"> <!-- Invisible placeholder for flex spacing -->
-            <span class="material-symbols-outlined">settings</span>
-        </div>
-    </header>
-
-    <!-- 2️⃣ MAIN CONTENT -->
-    <main class="account-main">
-        
-        <!-- ==========================================
-             STATE 1: LOGGED IN (Future Supabase Auth)
-             ========================================== -->
-        <div id="auth-logged-in" style="display: block;">
-            <div class="profile-card">
-                <img src="https://placehold.co/150x150/1a1a1a/ffffff?text=U" alt="Profile Avatar" class="profile-avatar" id="profile-avatar">
-                <div class="profile-info">
-                    <h2 class="profile-name" id="profile-name">Loading...</h2>
-                    <p class="profile-email" id="profile-email">loading@email.com</p>
-                    <p class="profile-mobile" id="profile-mobile">+91 ----------</p>
-                    <button class="edit-profile-btn">Edit Profile</button>
-                </div>
+<header class="top-header">
+    <a href="#" onclick="window.history.back();return false;" class="header-icon">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <div class="header-title" style="font-weight:700;color:#1a1a1a;">My Account</div>
+    <div class="header-icon" style="opacity:0;">
+        <span class="material-symbols-outlined">settings</span>
+    </div>
+</header>
+<main class="account-main account-loading">
+    <div class="account-loader" id="account-loader">
+        <div class="loader-spinner"></div>
+        <p>Loading account...</p>
+    </div>
+    <!-- LOGGED-IN STATE -->
+    <div id="auth-logged-in" style="display:none;">
+        <div class="profile-card">
+            <img src="https://placehold.co/150x150/1a1a1a/ffffff?text=U" alt="Profile Avatar" class="profile-avatar" id="profile-avatar">
+            <div class="profile-info">
+                <h2 class="profile-name" id="profile-name">Loading...</h2>
+                <p class="profile-email" id="profile-email">Loading...</p>
+                <p class="profile-mobile" id="profile-mobile">No mobile added</p>
+                <button class="edit-profile-btn" id="edit-profile-btn" type="button">Edit Profile</button>
             </div>
         </div>
+    </div>
 
-        <!-- ==========================================
-             STATE 2: LOGGED OUT (Guest State)
-             ========================================== -->
-        <div id="auth-logged-out" style="display: none;">
-            <div class="guest-card">
-                <span class="material-symbols-outlined guest-icon">account_circle</span>
-                <h2 class="guest-title">Welcome to E-KHOKHA</h2>
-                <p class="guest-desc">Login or sign up to view your complete profile, orders, and saved addresses.</p>
-                <button class="btn-login" onclick="alert('Supabase Auth Phase mein banega!')">Login / Sign Up</button>
+    <!-- LOGGED-OUT STATE -->
+    <div id="auth-logged-out">
+        <div class="guest-card">
+            <span class="material-symbols-outlined guest-icon">account_circle</span>
+            <h2 class="guest-title">Welcome to E-KHOKHA</h2>
+            <p class="guest-desc">Login or sign up to view your complete profile, orders, and saved addresses.</p>
+            <button class="btn-login" type="button">Login / Sign Up</button>
+        </div>
+    </div>
+
+    <!-- ACCOUNT MENU -->
+    <div class="account-menu" style="display:none;">
+        <a href="order.html" class="menu-item">
+            <span class="material-symbols-outlined menu-icon">inventory_2</span>
+            <span class="menu-text">My Orders</span>
+            <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+        </a>
+
+        <a href="address.html" class="menu-item">
+            <span class="material-symbols-outlined menu-icon">location_on</span>
+            <span class="menu-text">Saved Addresses</span>
+            <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+        </a>
+
+        <a href="coupon.html" class="menu-item">
+            <span class="material-symbols-outlined menu-icon">local_offer</span>
+            <span class="menu-text">Coupons / Offers</span>
+            <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+        </a>
+
+        <a href="notification.html" class="menu-item">
+            <span class="material-symbols-outlined menu-icon">notifications</span>
+            <span class="menu-text">Notifications</span>
+            <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+        </a>
+
+        <a href="#" class="menu-item">
+            <span class="material-symbols-outlined menu-icon">support_agent</span>
+            <span class="menu-text">Help &amp; Support</span>
+            <span class="material-symbols-outlined menu-arrow">chevron_right</span>
+        </a>
+    </div>
+
+    <!-- LOGOUT -->
+    <div id="logout-section" class="logout-btn-container" style="display:none;" data-logout>
+        <span class="logout-text">
+            <span class="material-symbols-outlined">logout</span>
+            Logout
+        </span>
+    </div>
+<!-- EDIT PROFILE MODAL -->
+<div id="edit-profile-modal" class="profile-modal" style="display:none;">
+    <div class="profile-modal-box">
+        <div class="profile-modal-header">
+            <h3>Edit Profile</h3>
+            <button type="button" id="close-profile-modal">×</button>
+        </div>
+
+        <form id="edit-profile-form">
+            <div class="profile-form-field">
+                <label for="edit-name">Full Name</label>
+                <input type="text" id="edit-name" minlength="2" required>
             </div>
-        </div>
 
-        <!-- 3️⃣ ACCOUNT MENU SECTIONS -->
-        <div class="account-menu">
-            <a href="order.html" class="menu-item">
-                <span class="material-symbols-outlined menu-icon">inventory_2</span>
-                <span class="menu-text">My Orders</span>
-                <span class="material-symbols-outlined menu-arrow">chevron_right</span>
-            </a>
+            <div class="profile-form-field">
+                <label for="edit-mobile">Mobile Number</label>
+                <input
+                    type="tel"
+                    id="edit-mobile"
+                    inputmode="numeric"
+                    maxlength="10"
+                    placeholder="Enter 10-digit mobile number"
+                >
+            </div>
 
-            <a href="#" class="menu-item">
-                <span class="material-symbols-outlined menu-icon">location_on</span>
-                <span class="menu-text">Saved Addresses</span>
-                <span class="material-symbols-outlined menu-arrow">chevron_right</span>
-            </a>
-            <a href="coupon.html" class="menu-item">
-                <span class="material-symbols-outlined menu-icon">local_offer</span>
-                <span class="menu-text">Coupons / Offers</span>
-                <span class="material-symbols-outlined menu-arrow">chevron_right</span>
-            </a>
-            <a href="notification.html" class="menu-item">
-                <span class="material-symbols-outlined menu-icon">notifications</span>
-                <span class="menu-text">Notifications</span>
-                <span class="material-symbols-outlined menu-arrow">chevron_right</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="material-symbols-outlined menu-icon">support_agent</span>
-                <span class="menu-text">Help & Support</span>
-                <span class="material-symbols-outlined menu-arrow">chevron_right</span>
-            </a>
-        </div>
+            <p id="profile-edit-error" class="profile-edit-message error" hidden></p>
+            <p id="profile-edit-success" class="profile-edit-message success" hidden></p>
 
-        <!-- 4️⃣ LOGOUT BUTTON (Only visible when logged in) -->
-        <div id="logout-section" class="logout-btn-container" style="display: block;" onclick="handleFakeLogout()">
-            <span class="logout-text">
-                <span class="material-symbols-outlined">logout</span>
-                Logout
-            </span>
-        </div>
+            <div class="profile-modal-actions">
+                <button type="button" id="cancel-profile-edit">Cancel</button>
+                <button type="submit" id="save-profile-btn">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+</main>
 
-    </main>
+<nav class="bottom-nav">
+    <a href="../index.html" class="nav-item">
+        <span class="material-symbols-outlined">home</span>
+        <span>Home</span>
+    </a>
 
-    <!-- 5️⃣ BOTTOM NAVIGATION -->
-    <nav class="bottom-nav">
-        <a href="../index.html" class="nav-item">
-            <span class="material-symbols-outlined">home</span>
-            <span>Home</span>
-        </a>
-        <a href="category.html" class="nav-item">
-            <span class="material-symbols-outlined">category</span>
-            <span>Categories</span>
-        </a>
-        <a href="cart.html" class="nav-item">
-            <span class="material-symbols-outlined">shopping_cart</span>
-            <span>Cart</span>
-            
-        </a>
-        <a href="order.html" class="nav-item">
-            <span class="material-symbols-outlined">list_alt</span>
-            <span>Order</span>
-        </a>
-        <!-- ACCOUNT TAB ACTIVE/HIGHLIGHTED HAI -->
-        <a href="account.html" class="nav-item active">
-            <span class="material-symbols-outlined">person</span>
-            <span>Account</span>
-        </a>
-    </nav>
+    <a href="category.html" class="nav-item">
+        <span class="material-symbols-outlined">category</span>
+        <span>Categories</span>
+    </a>
 
-    <!-- Scripts Link -->
-    <script src="../js/app.js"></script>
-    <script src="../js/account.js"></script> <!-- Ye hum agle phase me banayenge -->
+    <a href="cart.html" class="nav-item">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span>Cart</span>
+    </a>
+
+    <a href="order.html" class="nav-item">
+        <span class="material-symbols-outlined">list_alt</span>
+        <span>Order</span>
+    </a>
+
+    <a href="account.html" class="nav-item active">
+        <span class="material-symbols-outlined">person</span>
+        <span>Account</span>
+    </a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/account.js"></script>
 </body>
 </html>
