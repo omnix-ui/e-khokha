@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>E-KHOKHA Admin - Customers</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+<div class="brand">E-KHOKHA <span>ADMIN</span></div>
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="products.html">Products</a>
+<a href="orders.html">Orders</a>
+<a href="category.html">Categories</a>
+<a href="coupons.html">Coupons</a>
+<a href="reviews.html">Reviews</a>
+<a class="active" href="customers.html">Customers</a>
+<a href="notifications.html">Notifications</a>
+</nav>
+<button id="logoutBtn" class="logout">Logout</button>
+</aside>
+<div class="main">
+<header class="topbar">
+<button id="menuBtn" class="menu" type="button">☰</button>
+<div>
+<h1>Customers</h1>
+<p id="adminWelcome">Checking access...</p>
+</div>
+</header>
+<main class="content">
+<div class="page-head">
+<div>
+<h2>Customers</h2>
+<p>View and manage your store customers.</p>
+</div>
+</div>
+<div class="toolbar">
+<input type="search" id="customerSearch" placeholder="Search customers...">
+<select id="customerFilter">
+<option value="all">All Customers</option>
+<option value="with-orders">With Orders</option>
+<option value="no-orders">No Orders</option>
+</select>
+</div>
+<div class="product-card">
+<div id="customersLoading" class="state">Loading customers...</div>
+<div id="customersEmpty" class="state hidden">No customers found.</div>
+<div class="table-wrap">
+<table id="customersTable">
+<thead>
+<tr>
+<th>Customer</th>
+<th>Customer ID</th>
+<th>Orders</th>
+<th>Total Spent</th>
+<th>Joined</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="customersBody"></tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="customerModal">
+<div class="product-modal customer-modal">
+<div class="modal-header">
+<div>
+<h2>Customer Details</h2>
+<p id="customerModalSubtitle">Customer information</p>
+</div>
+<button type="button" class="modal-close" id="closeCustomerModal">×</button>
+</div>
+<div id="customerDetails" class="customer-details"></div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="admin.js"></script>
+<script src="customers.js"></script>
+</body>
+</html>

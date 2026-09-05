@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>E-KHOKHA Admin - Notifications</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+<div class="brand">E-KHOKHA <span>ADMIN</span></div>
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="products.html">Products</a>
+<a href="orders.html">Orders</a>
+<a href="category.html">Categories</a>
+<a href="coupons.html">Coupons</a>
+<a href="reviews.html">Reviews</a>
+<a href="customers.html">Customers</a>
+<a class="active" href="notifications.html">Notifications</a>
+</nav>
+<button id="logoutBtn" class="logout">Logout</button>
+</aside>
+<div class="main">
+<header class="topbar">
+<button id="menuBtn" class="menu" type="button">☰</button>
+<div>
+<h1>Notifications</h1>
+<p id="adminWelcome">Checking access...</p>
+</div>
+</header>
+<main class="content">
+<div class="page-head">
+<div>
+<h2>Notifications</h2>
+<p>Send notifications to your customers.</p>
+</div>
+<button class="primary-btn" id="sendNotificationBtn" type="button">+ Send Notification</button>
+</div>
+<div class="toolbar">
+<input type="search" id="notificationSearch" placeholder="Search notifications...">
+<select id="notificationFilter">
+<option value="all">All Types</option>
+<option value="order">Order</option>
+<option value="delivery">Delivery</option>
+<option value="coupon">Coupon</option>
+<option value="review">Review</option>
+<option value="order">Order</option>
+<option value="delivery">Delivery</option>
+<option value="coupon">Coupon</option>
+<option value="review">Review</option>
+</select>
+</div>
+<div class="product-card">
+<div id="notificationsLoading" class="state">Loading notifications...</div>
+<div id="notificationsEmpty" class="state hidden">No notifications found.</div>
+<div class="table-wrap">
+<table id="notificationsTable">
+<thead>
+<tr>
+<th>Customer</th>
+<th>Type</th>
+<th>Title</th>
+<th>Message</th>
+<th>Date</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="notificationsBody"></tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="notificationModal">
+<div class="product-modal notification-modal">
+<div class="modal-header">
+<div>
+<h2>Send Notification</h2>
+<p>Send a message directly to a customer.</p>
+</div>
+<button type="button" class="modal-close" id="closeNotificationModal">×</button>
+</div>
+<form id="notificationForm">
+<div class="form-section">
+<h3>Notification Information</h3>
+<div class="form-grid">
+<div class="form-group full">
+<label for="notificationUser">Customer</label>
+<select id="notificationUser" required>
+<option value="">Select customer</option>
+</select>
+</div>
+<div class="form-group">
+<label for="notificationType">Type</label>
+<select id="notificationType">
+
+<option value="order">Order</option>
+<option value="delivery">Delivery</option>
+<option value="coupon">Coupon</option>
+<option value="review">Review</option>
+</select>
+</div>
+<div class="form-group">
+<label for="notificationOrder">Related Order (Optional)</label>
+<select id="notificationOrder">
+<option value="">No related order</option>
+</select>
+</div>
+<div class="form-group full">
+<label for="notificationTitle">Title</label>
+<input id="notificationTitle" type="text" maxlength="150" placeholder="Notification title" required>
+</div>
+<div class="form-group full">
+<label for="notificationMessage">Message</label>
+<textarea id="notificationMessage" maxlength="1000" rows="5" placeholder="Write notification message..." required></textarea>
+</div>
+</div>
+</div>
+<div id="notificationFormMessage" class="form-message"></div>
+<div class="modal-actions">
+<button type="button" class="cancel-btn" id="cancelNotificationBtn">Cancel</button>
+<button type="submit" class="primary-btn" id="saveNotificationBtn">Send Notification</button>
+</div>
+</form>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="admin.js"></script>
+<script src="notifications.js"></script>
+</body>
+</html>

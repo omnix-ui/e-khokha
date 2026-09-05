@@ -2,97 +2,63 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Order Success - E-KHOKHA</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/success.css">
 </head>
 <body>
-
-<header class="success-header">
-    <div class="header-title">E-KHOKHA</div>
-</header>
-
+<header class="success-header"><div class="header-title">E-KHOKHA</div></header>
 <main class="success-main">
+<section class="success-hero">
+<div class="success-animation"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+<h1>Order Placed Successfully!</h1>
+<p>Thank you for shopping with us.</p>
+<span class="status-badge" id="success-status">Order Confirmed</span>
+</section>
 
-    <section class="success-hero">
-        <div class="success-animation">
-            <span class="material-symbols-outlined check-icon">check_circle</span>
-        </div>
-        <h1>Order Placed Successfully!</h1>
-        <p>Thank you for shopping with us.</p>
-        <span class="status-badge">Order Confirmed</span>
-    </section>
+<section class="order-card">
+<h3 class="section-title">Order Details</h3>
+<div class="detail-row"><span>Order ID</span><strong id="success-order-id">—</strong></div>
+<div class="detail-row"><span>Order Date</span><strong id="success-order-date">—</strong></div>
+<div class="detail-row"><span>Payment</span><strong class="green" id="success-payment">—</strong></div>
+</section>
 
-    <section class="order-card">
-        <h3 class="section-title">Order Details</h3>
+<section class="order-card">
+<h3 class="section-title">Ordered Products</h3>
+<div id="success-items"></div>
+</section>
 
-        <div class="detail-row">
-            <span>Order ID</span>
-            <strong id="success-order-id">—</strong>
-        </div>
+<section class="order-card bill-card">
+<h3 class="section-title">Price Details</h3>
+<div class="bill-row"><span>Subtotal</span><span id="success-subtotal">₹0</span></div>
+<div class="bill-row coupon-row" id="success-coupon-row"><span id="success-coupon-label">Coupon</span><span id="success-coupon">-₹0</span></div>
+<div class="bill-row" id="success-delivery-row"><span>Delivery Fee</span><span id="success-delivery">₹0</span></div>
+<div class="total-row"><strong>Total Amount</strong><strong id="success-amount">₹0</strong></div>
+</section>
 
-        <div class="detail-row">
-            <span>Order Date</span>
-            <strong id="success-order-date">—</strong>
-        </div>
-
-        <div class="detail-row">
-            <span>Payment</span>
-            <strong class="green" id="success-payment">Cash on Delivery</strong>
-        </div>
-    </section>
-
-    <section class="order-card">
-        <h3 class="section-title">Ordered Products</h3>
-        <div id="success-items"></div>
-    </section>
-
-    <section class="order-card bill-card">
-        <h3 class="section-title">Price Details</h3>
-
-<div class="bill-row">
-    <span>Subtotal</span>
-    <span id="success-subtotal">₹0</span>
+<section class="order-card">
+<h3 class="section-title">Delivery Details</h3>
+<div class="address-box">
+<strong id="success-name">—</strong>
+<p id="success-address">—</p>
+<p>Mobile: <span id="success-mobile">—</span></p>
 </div>
-
-<div class="bill-row coupon-row" id="success-coupon-row">
-    <span id="success-coupon-label">Coupon</span>
-    <span id="success-coupon">-₹0</span>
+<div class="delivery-box">
+<span class="material-symbols-outlined">local_shipping</span>
+<div><small>Estimated Delivery</small><strong id="success-date">Processing...</strong></div>
 </div>
+</section>
 
-        <div class="total-row">
-            <strong>Total Amount</strong>
-            <strong id="success-amount">₹0</strong>
-        </div>
-    </section>
-
-    <section class="order-card">
-        <h3 class="section-title">Delivery Details</h3>
-
-        <div class="address-box">
-            <strong id="success-name">—</strong>
-            <p id="success-address">—</p>
-            <p>Mobile: <span id="success-mobile">—</span></p>
-        </div>
-
-        <div class="delivery-box">
-            <span class="material-symbols-outlined">local_shipping</span>
-            <div>
-                <small>Estimated Delivery</small>
-                <strong id="success-date">Processing...</strong>
-            </div>
-        </div>
-    </section>
-
-    <div class="action-buttons">
-        <a href="../index.html" class="btn-primary">Continue Shopping</a>
-        <a href="order.html" class="btn-secondary">View Order</a>
-    </div>
-
+<div class="action-buttons">
+<a href="../index.html" class="btn-primary">Continue Shopping</a>
+<a href="order.html" class="btn-secondary">View Order</a>
+</div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
 <script src="../js/success.js"></script>
 </body>
 </html>

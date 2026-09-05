@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>E-KHOKHA Admin - Orders</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+<div class="brand">E-KHOKHA <span>ADMIN</span></div>
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="products.html">Products</a>
+<a href="category.html">Categories</a>
+<a href="inventory.html">Inventory</a>
+<a class="active" href="orders.html">Orders</a>
+<a href="#">Coupons</a>
+<a href="#">Reviews</a>
+<a href="#">Customers</a>
+<a href="#">Notifications</a>
+</nav>
+<button id="logoutBtn" class="logout">Logout</button>
+</aside>
+
+<div class="main">
+<header class="topbar">
+<button id="menuBtn" class="menu" type="button">☰</button>
+<div>
+<h1>Orders</h1>
+<p id="adminWelcome">Checking access...</p>
+</div>
+</header>
+
+<main class="content">
+<div class="page-head">
+<div>
+<h2>Orders</h2>
+<p>Manage customer orders and order status.</p>
+</div>
+</div>
+
+<div class="toolbar">
+<input type="search" id="orderSearch" placeholder="Search order code or customer...">
+<select id="orderStatusFilter">
+<option value="all">All Orders</option>
+<option value="pending">Pending</option>
+<option value="confirmed">Confirmed</option>
+<option value="processing">Processing</option>
+<option value="shipped">Shipped</option>
+<option value="delivered">Delivered</option>
+<option value="cancelled">Cancelled</option>
+</select>
+</div>
+
+<div class="product-card">
+<div id="ordersLoading" class="state">Loading orders...</div>
+<div id="ordersEmpty" class="state hidden">No orders found.</div>
+
+<div class="table-wrap">
+<table id="ordersTable">
+<thead>
+<tr>
+<th>Order</th>
+<th>Customer</th>
+<th>Date</th>
+<th>Total</th>
+<th>Payment</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="ordersBody"></tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="orderModal">
+<div class="product-modal order-modal">
+<div class="modal-header">
+<div>
+<h2>Order Details</h2>
+<p id="orderModalSubtitle">View order information.</p>
+</div>
+<button type="button" class="modal-close" id="closeOrderModal">×</button>
+</div>
+
+<div class="order-details" id="orderDetails"></div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="admin.js"></script>
+<script src="orders.js"></script>
+</body>
+</html>

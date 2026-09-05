@@ -2,7 +2,8 @@
 // 🔍 E-KHOKHA SEARCH ENGINE (PHASE 3 - SECURE)
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await window.eKhokhaDataReady;
     const searchInput = document.getElementById('search-input');
     const clearBtn = document.getElementById('clear-btn');
     const stateInitial = document.getElementById('state-initial');
@@ -11,10 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchSummary = document.getElementById('search-summary');
     const resultCount = document.getElementById('result-count');
 
-    if (typeof eKhokhaProducts === 'undefined') {
-        console.error("E-Khokha Error: Product database not found!");
-        return;
-    }
 
     // --- 1. CORE SEARCH LOGIC & URL HANDLING ---
     function performSearch(query) {

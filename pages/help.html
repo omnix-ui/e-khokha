@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Help & Support - E-KHOKHA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+body{background:#f8f9fa;margin:0;color:#1a1a1a}.help-main{padding:0px 15px 90px}.help-card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}.help-title{font-size:16px;font-weight:700;margin:0 0 14px}.faq{border-bottom:1px solid #f1f2f6}.faq:last-child{border-bottom:0}.faq-btn{width:100%;background:none;border:0;padding:15px 0;display:flex;align-items:center;justify-content:space-between;text-align:left;font-size:14px;font-weight:600;color:#2d3436;cursor:pointer}.faq-answer{display:none;color:#636e72;font-size:13px;line-height:1.5;padding:0 25px 15px 0}.faq.open .faq-answer{display:block}.faq.open .faq-btn .arrow{transform:rotate(180deg)}.support-item{display:flex;align-items:center;gap:12px;padding:12px 0}.support-icon{width:40px;height:40px;border-radius:50%;background:#fff0f2;color:#fd4f6a;display:flex;align-items:center;justify-content:center}.support-text{flex:1}.support-text strong{display:block;font-size:14px}.support-text span{display:block;color:#636e72;font-size:12px;margin-top:3px}.bottom-nav{z-index:100}
+</style>
+</head>
+<body>
+<header class="top-header">
+<a href="#" onclick="window.history.back();return false;" class="header-icon">
+<span class="material-symbols-outlined">arrow_back</span>
+</a>
+<div class="header-title" style="font-weight:700;color:#1a1a1a;">Help &amp; Support</div>
+<div class="header-icon" style="opacity:0;"><span class="material-symbols-outlined">help</span></div>
+</header>
+
+<main class="help-main">
+<div class="help-card">
+<h2 class="help-title">Frequently Asked Questions</h2>
+
+<div class="faq">
+<button class="faq-btn" type="button">Where can I check my order status?<span class="material-symbols-outlined arrow">expand_more</span></button>
+<div class="faq-answer">Open My Orders from your Account section to view your orders, payment status and delivery information.</div>
+</div>
+
+<div class="faq">
+<button class="faq-btn" type="button">Can I change my delivery address?<span class="material-symbols-outlined arrow">expand_more</span></button>
+<div class="faq-answer">You can manage your saved addresses from the Saved Addresses section. For an already placed order, address changes may not be possible after processing has started.</div>
+</div>
+
+<div class="faq">
+<button class="faq-btn" type="button">Why is my coupon not working?<span class="material-symbols-outlined arrow">expand_more</span></button>
+<div class="faq-answer">Check the coupon's minimum order value, validity period and usage limits. Only active and eligible coupons can be applied.</div>
+</div>
+
+<div class="faq">
+<button class="faq-btn" type="button">How do I know if my order was placed?<span class="material-symbols-outlined arrow">expand_more</span></button>
+<div class="faq-answer">After a successful checkout, you will see the order success screen. Your order will also appear in My Orders.</div>
+</div>
+
+<div class="faq">
+<button class="faq-btn" type="button">How can I review a product?<span class="material-symbols-outlined arrow">expand_more</span></button>
+<div class="faq-answer">You can review a product after purchasing and receiving it. Reviews are checked before becoming publicly visible.</div>
+</div>
+</div>
+
+<div class="help-card">
+<h2 class="help-title">Need More Help?</h2>
+
+<div class="support-item">
+<div class="support-icon"><span class="material-symbols-outlined">shopping_bag</span></div>
+<div class="support-text"><strong>Order Support</strong><span>Check My Orders for order-related information.</span></div>
+</div>
+
+<div class="support-item">
+<div class="support-icon"><span class="material-symbols-outlined">location_on</span></div>
+<div class="support-text"><strong>Delivery Support</strong><span>Check your saved address and delivery information.</span></div>
+</div>
+
+<div class="support-item">
+<div class="support-icon"><span class="material-symbols-outlined">local_offer</span></div>
+<div class="support-text"><strong>Coupon Support</strong><span>Check Coupons / Offers for available coupons and their conditions.</span></div>
+</div>
+</div>
+</main>
+
+<nav class="bottom-nav">
+<a href="../index.html" class="nav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
+<a href="category.html" class="nav-item"><span class="material-symbols-outlined">category</span><span>Categories</span></a>
+<a href="cart.html" class="nav-item"><span class="material-symbols-outlined">shopping_cart</span><span>Cart</span></a>
+<a href="order.html" class="nav-item"><span class="material-symbols-outlined">list_alt</span><span>Order</span></a>
+<a href="account.html" class="nav-item active"><span class="material-symbols-outlined">person</span><span>Account</span></a>
+</nav>
+
+<script>
+document.querySelectorAll(".faq-btn").forEach(btn=>btn.addEventListener("click",()=>btn.parentElement.classList.toggle("open")));
+</script>
+</body>
+</html>

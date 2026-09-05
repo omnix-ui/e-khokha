@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>E-KHOKHA Admin - Inventory</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+<div class="brand">E-KHOKHA <span>ADMIN</span></div>
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="products.html">Products</a>
+<a href="category.html">Categories</a>
+<a class="active" href="inventory.html">Inventory</a>
+<a href="#">Orders</a>
+<a href="#">Coupons</a>
+<a href="#">Reviews</a>
+<a href="#">Customers</a>
+<a href="#">Notifications</a>
+</nav>
+<button id="logoutBtn" class="logout">Logout</button>
+</aside>
+<div class="main">
+<header class="topbar">
+<button id="menuBtn" class="menu" type="button">☰</button>
+<div>
+<h1>Inventory</h1>
+<p id="adminWelcome">Checking access...</p>
+</div>
+</header>
+<main class="content">
+<div class="page-head">
+<div>
+<h2>Inventory</h2>
+<p>Manage product variant stock levels.</p>
+</div>
+</div>
+<div class="toolbar">
+<input type="search" id="inventorySearch" placeholder="Search products or variants...">
+<select id="inventoryFilter">
+<option value="all">All Stock</option>
+<option value="in">In Stock</option>
+<option value="low">Low Stock</option>
+<option value="out">Out of Stock</option>
+</select>
+</div>
+<div class="product-card">
+<div id="inventoryLoading" class="state">Loading inventory...</div>
+<div id="inventoryEmpty" class="state hidden">No inventory found.</div>
+<div class="table-wrap">
+<table id="inventoryTable">
+<thead>
+<tr>
+<th>Product</th>
+<th>Variant</th>
+<th>Stock</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="inventoryBody"></tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="stockModal">
+<div class="product-modal stock-modal">
+<div class="modal-header">
+<div>
+<h2>Update Stock</h2>
+<p id="stockProductName">Update product inventory.</p>
+</div>
+<button type="button" class="modal-close" id="closeStockModal">×</button>
+</div>
+<form id="stockForm">
+<input type="hidden" id="stockVariantId">
+<div class="form-section">
+<h3>Inventory</h3>
+<div class="form-grid">
+<div class="form-group full">
+<label>Product</label>
+<input id="stockProduct" type="text" readonly>
+</div>
+<div class="form-group">
+<label>Variant</label>
+<input id="stockVariant" type="text" readonly>
+</div>
+<div class="form-group">
+<label for="stockQuantity">Stock Quantity</label>
+<input id="stockQuantity" type="number" min="0" step="1" required>
+</div>
+</div>
+</div>
+<div id="stockFormMessage" class="form-message"></div>
+<div class="modal-actions">
+<button type="button" class="cancel-btn" id="cancelStockBtn">Cancel</button>
+<button type="submit" class="primary-btn" id="saveStockBtn">Update Stock</button>
+</div>
+</form>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="admin.js"></script>
+<script src="inventory.js"></script>
+</body>
+</html>

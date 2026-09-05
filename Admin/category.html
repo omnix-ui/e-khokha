@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>E-KHOKHA Admin - Categories</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+<div class="brand">E-KHOKHA <span>ADMIN</span></div>
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="products.html">Products</a>
+<a class="active" href="category.html">Category</a>
+<a href="#">Orders</a>
+<a href="#">Coupons</a>
+<a href="#">Reviews</a>
+<a href="#">Customers</a>
+<a href="#">Notifications</a>
+</nav>
+<button id="logoutBtn" class="logout">Logout</button>
+</aside>
+<div class="main">
+<header class="topbar">
+<button id="menuBtn" class="menu" type="button">☰</button>
+<div>
+<h1>Categories</h1>
+<p id="adminWelcome">Checking access...</p>
+</div>
+</header>
+<main class="content">
+<div class="page-head">
+<div>
+<h2>Categories</h2>
+<p>Manage product categories for your store.</p>
+</div>
+<button class="primary-btn" id="addCategoryBtn" type="button">+ Add Category</button>
+</div>
+<div class="toolbar">
+<input type="search" id="categorySearch" placeholder="Search categories...">
+<select id="statusFilter">
+<option value="all">All Status</option>
+<option value="active">Active</option>
+<option value="inactive">Inactive</option>
+</select>
+</div>
+<div class="product-card">
+<div id="categoriesLoading" class="state">Loading categories...</div>
+<div id="categoriesEmpty" class="state hidden">No categories found.</div>
+<div class="table-wrap">
+<table id="categoriesTable">
+<thead>
+<tr>
+<th>Category</th>
+<th>Slug</th>
+<th>Products</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="categoriesBody"></tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="categoryModal">
+<div class="product-modal category-modal">
+<div class="modal-header">
+<div>
+<h2 id="categoryEditorTitle">Add Category</h2>
+<p id="categoryEditorSubtitle">Create a new category for your store.</p>
+</div>
+<button type="button" class="modal-close" id="closeCategoryModal">×</button>
+</div>
+<form id="categoryForm">
+<input type="hidden" id="categoryId">
+<div class="form-section">
+<h3>Category Information</h3>
+<div class="form-grid">
+<div class="form-group full">
+<label for="categoryName">Category Name</label>
+<input id="categoryName" type="text" maxlength="100" required placeholder="e.g. Electronics">
+</div>
+<div class="form-group">
+<label for="categorySlug">Slug</label>
+<input id="categorySlug" type="text" maxlength="100" placeholder="electronics">
+</div>
+<div class="form-group">
+<label for="categoryIcon">Icon</label>
+<input id="categoryIcon" type="text" maxlength="50" placeholder="🎧">
+</div>
+<div class="form-group full">
+<label for="categoryStatus">Status</label>
+<select id="categoryStatus">
+<option value="active">Active</option>
+<option value="inactive">Inactive</option>
+</select>
+</div>
+</div>
+</div>
+<div id="categoryFormMessage" class="form-message"></div>
+<div class="modal-actions">
+<button type="button" class="cancel-btn" id="cancelCategoryBtn">Cancel</button>
+<button type="submit" class="primary-btn" id="saveCategoryBtn">Save Category</button>
+</div>
+</form>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="admin.js"></script>
+<script src="category.js"></script>
+</body>
+</html>

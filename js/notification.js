@@ -1,137 +1,180 @@
 // ==========================================
-// 🔔 E-KHOKHA NOTIFICATION ENGINE
+// 🔔 E-KHOKHA SUPABASE NOTIFICATION ENGINE
 // ==========================================
 
-const MOCK_USER_ID = "auth-uuid-placeholder-001";
+let currentUser = null;
+let notifications = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderNotifications();
-});
+document.addEventListener("DOMContentLoaded", loadNotifications);
 
-// Helper Function: Date to "X hours ago"
-function timeSince(dateString) {
-    const date = new Date(dateString);
-    const seconds = Math.floor((new Date() - date) / 1000);
+async function loadNotifications() {
+    const loading = document.getElementById("loading-state");
+    const empty = document.getElementById("empty-state");
+    const list = document.getElementById("notification-list");
+    const markAll = document.getElementById("mark-all-btn");
     
-    let interval = seconds / 86400;
-    if (interval > 1) return Math.floor(interval) + " days ago";
-    interval = seconds / 3600;
-    if (interval > 1) return Math.floor(interval) + " hours ago";
-    interval = seconds / 60;
-    if (interval > 1) return Math.floor(interval) + " mins ago";
-    return "Just now";
+    try {
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+        if (userError) throw userError;
+        if (!user) {
+            window.location.href = "login.html";
+            return;
+        }
+        
+        currentUser = user;
+        
+        const { data, error } = await supabaseClient
+            .from("notifications")
+            .select("notification_id,user_id,type,title,message,related_order_id,related_coupon_id,related_review_id,is_read,created_at")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false });
+        
+        if (error) throw error;
+        
+        notifications = data || [];
+        loading.style.display = "none";
+        
+        if (!notifications.length) {
+            list.style.display = "none";
+            empty.style.display = "flex";
+            markAll.style.visibility = "hidden";
+            return;
+        }
+        
+        empty.style.display = "none";
+        list.style.display = "flex";
+        renderNotifications();
+    } catch (error) {
+        console.error("Notification load error:", error);
+        loading.style.display = "none";
+        list.style.display = "none";
+        empty.style.display = "flex";
+        empty.querySelector("h2").textContent = "Unable to load notifications";
+        empty.querySelector("p").textContent = "Please try again later.";
+    }
+}
+
+function timeSince(dateString) {
+    const seconds = Math.max(0, Math.floor((Date.now() - new Date(dateString).getTime()) / 1000));
+    if (seconds < 60) return "Just now";
+    if (seconds < 3600) return Math.floor(seconds / 60) + " mins ago";
+    if (seconds < 86400) return Math.floor(seconds / 3600) + " hours ago";
+    if (seconds < 172800) return "Yesterday";
+    if (seconds < 604800) return Math.floor(seconds / 86400) + " days ago";
+    return new Date(dateString).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function getNotificationStyle(type) {
+    if (type === "order") return { icon: "shopping_bag", iconColor: "#0984e3", bgColor: "#e6f2ff" };
+    if (type === "delivery") return { icon: "local_shipping", iconColor: "#00b894", bgColor: "#e6fff9" };
+    if (type === "coupon") return { icon: "local_offer", iconColor: "#fd4f6a", bgColor: "#fff0f2" };
+    if (type === "review") return { icon: "star", iconColor: "#f39c12", bgColor: "#fff8e6" };
+    return { icon: "notifications", iconColor: "#636e72", bgColor: "#f1f2f6" };
 }
 
 function renderNotifications() {
-    const listContainer = document.getElementById('notification-list');
-    const emptyState = document.getElementById('empty-state');
-    const markAllBtn = document.getElementById('mark-all-btn');
+    const list = document.getElementById("notification-list");
+    const markAll = document.getElementById("mark-all-btn");
+    list.innerHTML = "";
+    let hasUnread = false;
+    
+    notifications.forEach(notif => {
+        const isRead = notif.is_read === true;
+        if (!isRead) hasUnread = true;
+        
+        const style = getNotificationStyle(notif.type);
+        const card = document.createElement("div");
+        card.style.cssText = `background:${isRead?"#fff":"#f8faff"};border-radius:12px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,0.04);display:flex;gap:15px;cursor:pointer;border:1px solid ${isRead?"#f1f2f6":"#dfe6e9"};`;
+        
+        const iconBox = document.createElement("div");
+        iconBox.style.cssText = `width:40px;height:40px;border-radius:50%;background:${style.bgColor};display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+        const icon = document.createElement("span");
+        icon.className = "material-symbols-outlined";
+        icon.style.cssText = `color:${style.iconColor};font-size:20px;`;
+        icon.textContent = style.icon;
+        iconBox.appendChild(icon);
+        
+        const content = document.createElement("div");
+        content.style.flex = "1";
+        
+        const titleRow = document.createElement("div");
+        titleRow.style.cssText = "display:flex;justify-content:space-between;align-items:flex-start;";
+        
+        const title = document.createElement("div");
+        title.style.cssText = `font-weight:${isRead?"600":"700"};color:${isRead?"#2d3436":"#1a1a1a"};font-size:15px;`;
+        title.textContent = notif.title || "Notification";
+        
+        titleRow.appendChild(title);
+        
+        if (!isRead) {
+            const dot = document.createElement("div");
+            dot.style.cssText = "width:8px;height:8px;background:#0984e3;border-radius:50%;margin-top:4px;flex-shrink:0;";
+            titleRow.appendChild(dot);
+        }
+        
+        const message = document.createElement("div");
+        message.style.cssText = `color:${isRead?"#636e72":"#2d3436"};font-size:13px;margin-top:4px;line-height:1.4;`;
+        message.textContent = notif.message || "";
+        
+        const time = document.createElement("div");
+        time.style.cssText = "color:#a4b0be;font-size:11px;font-weight:500;margin-top:8px;";
+        time.textContent = timeSince(notif.created_at);
+        
+        content.appendChild(titleRow);
+        content.appendChild(message);
+        content.appendChild(time);
+        card.appendChild(iconBox);
+        card.appendChild(content);
+        
+        card.onclick = () => handleNotificationClick(notif);
+        list.appendChild(card);
+    });
+    
+    markAll.style.visibility = hasUnread ? "visible" : "hidden";
+}
 
-    // Rule 7: Fetch Read State from LocalStorage (Mutate nahi karna master data ko)
-    const readList = JSON.parse(localStorage.getItem('eKhokhaReadNotifications')) || [];
+async function handleNotificationClick(notif) {
+    try {
+        if (!notif.is_read) {
+            const { error } = await supabaseClient
+                .from("notifications")
+                .update({ is_read: true })
+                .eq("notification_id", notif.notification_id)
+                .eq("user_id", currentUser.id);
+            
+            if (error) throw error;
+            
+            notif.is_read = true;
+            renderNotifications();
+        }
+        
+        if (notif.type === "order" || notif.type === "delivery") {
+            window.location.href = "order.html";
+        } else if (notif.type === "coupon") {
+            window.location.href = "coupon.html";
+        }
+    } catch (error) {
+        console.error("Mark notification read error:", error);
+    }
+}
 
-    // Rule 4: Filter & Sort (Newest First)
-    let userNotifications = eKhokhaNotifications.filter(n => n.user_id === MOCK_USER_ID);
-    userNotifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-    if (userNotifications.length === 0) {
-        listContainer.style.display = 'none';
-        emptyState.style.display = 'flex';
-        markAllBtn.style.display = 'none';
+window.markAllAsRead = async function() {
+    if (!currentUser) return;
+    
+    const unread = notifications.filter(n => !n.is_read);
+    if (!unread.length) return;
+    
+    const { error } = await supabaseClient
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("user_id", currentUser.id)
+        .eq("is_read", false);
+    
+    if (error) {
+        console.error("Mark all read error:", error);
         return;
     }
-
-    listContainer.innerHTML = '';
-    let hasUnread = false;
-
-    userNotifications.forEach(notif => {
-        // Checking if read logically
-        const isRead = notif.is_read || readList.includes(notif.notification_id);
-        if (!isRead) hasUnread = true;
-
-        // Dynamic Icon & Colors based on Type
-        let iconName = 'notifications';
-        let iconColor = '#636e72';
-        let bgColor = '#f1f2f6';
-
-        if (notif.type === 'order') { iconName = 'shopping_bag'; iconColor = '#0984e3'; bgColor = '#e6f2ff'; }
-        else if (notif.type === 'delivery') { iconName = 'local_shipping'; iconColor = '#00b894'; bgColor = '#e6fff9'; }
-        else if (notif.type === 'coupon') { iconName = 'local_offer'; iconColor = '#fd4f6a'; bgColor = '#fff0f2'; }
-
-        const card = document.createElement('div');
-        // Unread styling: Background highlight
-        card.style.background = isRead ? '#fff' : '#f8faff';
-        card.style.borderRadius = '12px';
-        card.style.padding = '15px';
-        card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
-        card.style.display = 'flex';
-        card.style.gap = '15px';
-        card.style.cursor = 'pointer';
-        card.style.border = isRead ? '1px solid #f1f2f6' : '1px solid #dfe6e9';
-        
-        // Action on Click
-        card.onclick = () => handleNotificationClick(notif.notification_id, notif.type);
-
-        card.innerHTML = `
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${bgColor}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <span class="material-symbols-outlined" style="color: ${iconColor}; font-size: 20px;">${iconName}</span>
-            </div>
-            <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="font-weight: ${isRead ? '600' : '700'}; color: ${isRead ? '#2d3436' : '#1a1a1a'}; font-size: 15px;">
-                        ${notif.title}
-                    </div>
-                    <!-- Rule 5: Unread Blue Dot -->
-                    ${!isRead ? `<div style="width: 8px; height: 8px; background: #0984e3; border-radius: 50%; margin-top: 4px;"></div>` : ''}
-                </div>
-                <div style="color: ${isRead ? '#636e72' : '#2d3436'}; font-size: 13px; margin-top: 4px; line-height: 1.4;">
-                    ${notif.message}
-                </div>
-                <div style="color: #a4b0be; font-size: 11px; font-weight: 500; margin-top: 8px;">
-                    ${timeSince(notif.created_at)}
-                </div>
-            </div>
-        `;
-        listContainer.appendChild(card);
-    });
-
-    // Toggle 'Mark all as read' button visibility
-    markAllBtn.style.visibility = hasUnread ? 'visible' : 'hidden';
-
-}
-
-// 🔴 Action Handler (Rule 6 & 7)
-function handleNotificationClick(notifId, type) {
-    // 1. Mark as Read in LocalStorage
-    let readList = JSON.parse(localStorage.getItem('eKhokhaReadNotifications')) || [];
-    if (!readList.includes(notifId)) {
-        readList.push(notifId);
-        localStorage.setItem('eKhokhaReadNotifications', JSON.stringify(readList));
-    }
-
-    // 2. Redirect Rules
-    if (type === 'order' || type === 'delivery') {
-        window.location.href = "order.html"; // Assume order history page
-    } else if (type === 'coupon') {
-        window.location.href = "coupon.html";
-    } else {
-        // General notification, just re-render to remove the unread dot
-        renderNotifications();
-    }
-}
-
-// 🔴 Mark All As Read Logic (Rule 8)
-window.markAllAsRead = function() {
-    let readList = JSON.parse(localStorage.getItem('eKhokhaReadNotifications')) || [];
     
-    // Find all unread notifications for this user
-    let unreadIds = eKhokhaNotifications
-        .filter(n => n.user_id === MOCK_USER_ID && !n.is_read && !readList.includes(n.notification_id))
-        .map(n => n.notification_id);
-
-    if (unreadIds.length > 0) {
-        readList = [...readList, ...unreadIds];
-        localStorage.setItem('eKhokhaReadNotifications', JSON.stringify(readList));
-        renderNotifications(); // UI Refresh
-    }
+    notifications.forEach(n => n.is_read = true);
+    renderNotifications();
 };
