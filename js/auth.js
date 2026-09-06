@@ -44,8 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
             setBtnLoading(btn, true, 'Create Account');
             try {
                 const { data, error } = await supabaseClient.auth.signUp({
-                    email, password: pass, options: { data: { full_name: name }, emailRedirectTo: `${window.location.origin}/pages/login.html` }
-                });
+    email,password:pass,
+    options:{data:{full_name:name},emailRedirectTo:`${window.location.origin}/pages/verify-success.html`}
+});
                 if (error) throw error;
                 if (data.user && !data.session) {
                     showMessage('signup-success', 'Account created! Please check your email and verify your account before logging in.');
