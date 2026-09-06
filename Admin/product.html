@@ -5,6 +5,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>E-KHOKHA Admin - Products</title>
 <link rel="stylesheet" href="admin.css">
+<style>
+.image-upload-box{border:2px dashed #d9d9d9;border-radius:12px;padding:18px;text-align:center;background:#fafafa}
+.image-upload-box input{display:none}
+.image-upload-btn{display:inline-block;padding:10px 16px;border-radius:8px;background:#fd4f6a;color:#fff;font-weight:600;cursor:pointer}
+.image-upload-info{margin:8px 0 0;color:#777;font-size:13px}
+.image-count{margin-top:10px;font-size:13px;font-weight:600;color:#555}
+.image-row{align-items:center}
+.image-preview{width:80px;height:80px;min-width:80px;border-radius:10px;overflow:hidden;background:#f1f1f1;border:1px solid #ddd}
+.image-preview img{width:100%;height:100%;object-fit:contain;display:block}
+.image-file-name{font-size:12px;color:#666;word-break:break-all;margin-top:4px}
+.image-primary-label{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.image-primary-label input{width:16px;height:16px}
+.image-remove-btn{background:#fff;border:1px solid #ddd;color:#d63031;border-radius:7px;padding:7px 10px;cursor:pointer}
+.image-upload-status{font-size:13px;margin-top:8px;color:#555}
+@media(max-width:600px){
+.image-row{display:grid!important;grid-template-columns:80px 1fr!important;gap:10px!important}
+.image-preview{grid-row:span 2}
+.image-row .image-order-group,.image-row .image-primary-label,.image-row .remove-row-btn{grid-column:2}
+}
+</style>
 </head>
 <body>
 <div class="admin-layout">
@@ -22,7 +42,7 @@
 <a href="notifications.html">Notifications</a>
 <a href="settings.html">Settings</a>
 </nav>
-<button id="logoutBtn" class="logout">Logout</button>
+<button id="logoutBtn" class="logout" type="button">Logout</button>
 </aside>
 <div class="main">
 <header class="topbar">
@@ -156,10 +176,18 @@
 <div class="section-title-row">
 <div>
 <h3>Product Images</h3>
-<p>Add image URLs for this product.</p>
+<p>Upload up to 6 images. JPG, PNG, WEBP • Maximum 5 MB each.</p>
 </div>
-<button type="button" class="secondary-btn" id="addImageBtn">+ Add Image</button>
 </div>
+
+<div class="image-upload-box">
+<label for="productImageFiles" class="image-upload-btn">+ Upload Images</label>
+<input id="productImageFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+<p class="image-upload-info">Choose multiple images at once. Exactly one image will be Primary.</p>
+<div id="imageCount" class="image-count">0 / 6 images</div>
+<div id="imageUploadStatus" class="image-upload-status"></div>
+</div>
+
 <div id="imagesList" class="dynamic-list"></div>
 </div>
 
