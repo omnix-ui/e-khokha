@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>E-KHOKHA Admin - Settings</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="admin-layout">
+<aside class="sidebar" id="sidebar">
+<div class="brand">E-KHOKHA <span>ADMIN</span></div>
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="product.html">Products</a>
+<a href="inventory.html">Inventory</a>
+<a href="orders.html">Orders</a>
+<a href="category.html">Categories</a>
+<a href="coupon.html">Coupons</a>
+<a href="reviews.html">Reviews</a>
+<a href="customers.html">Customers</a>
+<a href="notifications.html">Notifications</a>
+<a class="active" href="settings.html">Settings</a>
+</nav>
+<button id="logoutBtn" class="logout">Logout</button>
+</aside>
+<div class="main">
+<header class="topbar">
+<button id="menuBtn" class="menu" type="button">☰</button>
+<div>
+<h1>Settings</h1>
+<p id="adminWelcome">Checking access...</p>
+</div>
+</header>
+<main class="content">
+<div class="page-head">
+<div>
+<h2>Settings</h2>
+<p>Manage your admin account and security.</p>
+</div>
+</div>
+
+<div class="settings-grid">
+<section class="section-card settings-card">
+<h2>Admin Profile</h2>
+<p class="settings-subtitle">Your administrator account information.</p>
+<div class="profile-info">
+<div class="profile-avatar" id="profileAvatar">A</div>
+<div>
+<h3 id="profileName">Admin</h3>
+<p id="profileEmail">Loading...</p>
+<span class="admin-badge">Administrator</span>
+</div>
+</div>
+</section>
+
+<section class="section-card settings-card">
+<h2>Change Password</h2>
+<p class="settings-subtitle">Update your admin account password.</p>
+<form id="passwordForm">
+<div class="form-group">
+<label for="newPassword">New Password</label>
+<input id="newPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Enter new password" required>
+</div>
+<div class="form-group">
+<label for="confirmPassword">Confirm Password</label>
+<input id="confirmPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Confirm new password" required>
+</div>
+<div id="passwordMessage" class="form-message"></div>
+<button type="submit" class="primary-btn" id="changePasswordBtn">Change Password</button>
+</form>
+</section>
+
+<section class="section-card settings-card">
+<h2>Account Security</h2>
+<p class="settings-subtitle">Basic security information for this admin session.</p>
+<div class="security-row"><span>Account Role</span><strong>Admin</strong></div>
+<div class="security-row"><span>Authentication</span><strong>Email & Password</strong></div>
+<div class="security-row"><span>Access Protection</span><strong>Admin Verified</strong></div>
+</section>
+
+<section class="section-card settings-card danger-card">
+<h2>Session</h2>
+<p class="settings-subtitle">Sign out from the current administrator session.</p>
+<button type="button" class="danger-btn" id="settingsLogoutBtn">Logout Admin</button>
+</section>
+</div>
+</main>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="admin.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>
